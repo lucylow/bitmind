@@ -33,19 +33,7 @@
     "dist",
     "backend",
     "**/*.spec.ts",
-    "**/*.test.ts",
-    "src/controllers",
-    "src/middleware/auth.ts",
-    "src/middleware/errorHandler.ts",
-    "src/middleware/requestLogger.ts",
-    "src/routes",
-    "src/server.ts",
-    "src/config/index.ts",
-    "src/services/ai.ts",
-    "src/services/redis.ts",
-    "src/services/stacks.ts",
-    "src/services/ipfs.ts",
-    "src/services/webhooks.ts"
+    "**/*.test.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
