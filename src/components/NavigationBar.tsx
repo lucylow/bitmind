@@ -55,6 +55,16 @@ const NavigationBar = () => {
               Invoices
             </Link>
             <Link 
+              to="/create" 
+              className={`text-base font-medium transition-colors ${
+                isActive('/create') 
+                  ? 'text-blue-600 font-semibold' 
+                  : 'text-gray-700 hover:text-gray-900'
+              }`}
+            >
+              Create Invoice
+            </Link>
+            <Link 
               to="/help" 
               className={`text-base font-medium transition-colors ${
                 isActive('/help') 
@@ -67,8 +77,10 @@ const NavigationBar = () => {
             <Button 
               variant="default" 
               size="sm" 
-              className="ml-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
+              className="ml-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all"
+              onClick={() => alert('Wallet connection feature coming soon! This will connect to Hiro/Xverse wallet.')}
             >
+              <Brain className="w-4 h-4 mr-2" />
               Connect Wallet
             </Button>
           </div>
@@ -122,7 +134,9 @@ const NavigationBar = () => {
               variant="default" 
               size="sm" 
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
+              onClick={() => alert('Wallet connection feature coming soon! This will connect to Hiro/Xverse wallet.')}
             >
+              <Brain className="w-4 h-4 mr-2 inline" />
               Connect Wallet
             </Button>
           </div>

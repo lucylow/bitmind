@@ -1,96 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Plus, Filter, Search, Calendar, User, DollarSign, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { FileText, Plus, Filter, Search, Calendar, User, DollarSign, CheckCircle2, Clock, AlertCircle, Sparkles } from "lucide-react";
+import { InvoiceData } from '../types';
+import { invoiceService } from '../services/invoiceService';
 
 const InvoiceManager = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [invoices, setInvoices] = useState<InvoiceData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const invoices = [
-    {
-      id: "INV-001",
-      title: "Smart Contract Development",
-      dao: "DeFi DAO",
-      contractor: "Alice Johnson",
-      amount: "$12,500",
-      status: "funded",
-      progress: 75,
-      milestones: 4,
-      completedMilestones: 3,
-      dueDate: "Dec 31, 2024",
-      createdDate: "Nov 1, 2024"
-    },
-    {
-      id: "INV-002",
-      title: "UI/UX Design Package",
-      dao: "NFT Collective",
-      contractor: "Bob Smith",
-      amount: "$8,300",
-      status: "pending",
-      progress: 0,
-      milestones: 3,
-      completedMilestones: 0,
-      dueDate: "Jan 15, 2025",
-      createdDate: "Dec 1, 2024"
-    },
-    {
-      id: "INV-003",
-      title: "Marketing Campaign",
-      dao: "Web3 Guild",
-      contractor: "Carol White",
-      amount: "$15,000",
-      status: "completed",
-      progress: 100,
-      milestones: 5,
-      completedMilestones: 5,
-      dueDate: "Dec 20, 2024",
-      createdDate: "Oct 15, 2024"
-    },
-    {
-      id: "INV-004",
-      title: "Backend API Development",
-      dao: "DAO Builders",
-      contractor: "David Lee",
-      amount: "$9,200",
-      status: "funded",
-      progress: 40,
-      milestones: 5,
-      completedMilestones: 2,
-      dueDate: "Jan 10, 2025",
-      createdDate: "Nov 20, 2024"
-    },
-    {
-      id: "INV-005",
-      title: "Security Audit",
-      dao: "DeFi DAO",
-      contractor: "Eve Martinez",
-      amount: "$20,000",
-      status: "funded",
-      progress: 60,
-      milestones: 3,
-      completedMilestones: 2,
-      dueDate: "Jan 5, 2025",
-      createdDate: "Nov 25, 2024"
-    },
-    {
-      id: "INV-006",
-      title: "Community Management",
-      dao: "NFT Collective",
-      contractor: "Frank Chen",
-      amount: "$5,500",
-      status: "dispute",
-      progress: 50,
-      milestones: 2,
-      completedMilestones: 1,
-      dueDate: "Dec 28, 2024",
-      createdDate: "Nov 10, 2024"
-    },
-  ];
+  useEffect(() => {
+    loadInvoices();
+  }, []);
 
-  const filteredInvoices = filterStatus === "all" 
-    ? invoices 
-    : invoices.filter(inv => inv.status === filterStatus);
+  const loadInvoices = async () => {
+    try {
+      setLoading(true);
+      // For demo purposes, load all invoices
+      const allInvoices = await invoiceService.getAllInvoices();
+      setInvoices(allInvoices);
+    } catch (error) {
+      console.error('Failed to load invoices:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredInvoices = invoices.filter(inv => {
+    const matchesStatus = filterStatus === "all" || inv.status.toLowerCase() === filterStatus;
+    const matchesSearch = searchQuery === "" || 
+      inv.projectTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      inv.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      inv.daoName?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
+  const calculateProgress = (invoice: InvoiceData) => {
+    const completedMilestones = invoice.milestones.filter(m => m.status === 'RELEASED').length;
+    return Math.round((completedMilestones / invoice.milestones.length) * 100);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading invoices...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -130,8 +92,8 @@ const InvoiceManager = () => {
               </p>
             </div>
             <Button size="lg" className="shadow-lg">
-              <Plus className="mr-2 w-5 h-5" />
-              Create New Invoice
+              <Sparkles className="mr-2 w-5 h-5" />
+              Create with AI
             </Button>
           </div>
         </div>
@@ -170,7 +132,7 @@ const InvoiceManager = () => {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Completed</p>
                   <p className="text-3xl font-bold text-green-600">
-                    {invoices.filter(i => i.status === "completed").length}
+                    {invoices.filter(i => i.status === "COMPLETED").length}
                   </p>
                 </div>
                 <CheckCircle2 className="w-10 h-10 text-green-500" />
@@ -184,7 +146,7 @@ const InvoiceManager = () => {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Disputes</p>
                   <p className="text-3xl font-bold text-red-600">
-                    {invoices.filter(i => i.status === "dispute").length}
+                    {invoices.filter(i => i.status === "DISPUTED").length}
                   </p>
                 </div>
                 <AlertCircle className="w-10 h-10 text-red-500" />
@@ -201,7 +163,9 @@ const InvoiceManager = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search invoices by ID, DAO, or contractor..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search invoices by ID, DAO, or project title..."
                   className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
                 />
               </div>
@@ -266,19 +230,19 @@ const InvoiceManager = () => {
                           </Badge>
                           {getStatusIcon(invoice.status)}
                         </div>
-                        <p className="text-lg font-semibold text-gray-700 mb-2">{invoice.title}</p>
+                        <p className="text-lg font-semibold text-gray-700 mb-2">{invoice.projectTitle}</p>
                         <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
                             <User className="w-4 h-4" />
-                            <span>{invoice.contractor}</span>
+                            <span>{invoice.contractorAddress.slice(0,8)}...</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <DollarSign className="w-4 h-4" />
-                            <span>{invoice.dao}</span>
+                            <span>{invoice.daoName || 'DAO'}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            <span>Due: {invoice.dueDate}</span>
+                            <span>Timeline: {invoice.timeline || 'N/A'}</span>
                           </div>
                         </div>
                       </div>
@@ -288,22 +252,22 @@ const InvoiceManager = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">
-                          Milestones: {invoice.completedMilestones}/{invoice.milestones}
+                          Milestones: {invoice.milestones.filter(m => m.status === 'RELEASED').length}/{invoice.milestones.length}
                         </span>
-                        <span className="font-semibold text-gray-900">{invoice.progress}%</span>
+                        <span className="font-semibold text-gray-900">{calculateProgress(invoice)}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-3">
                         <div
                           className={`h-3 rounded-full transition-all ${
-                            invoice.status === "completed"
+                            invoice.status === "COMPLETED"
                               ? "bg-green-500"
-                              : invoice.status === "funded"
+                              : invoice.status === "ACTIVE"
                               ? "bg-blue-500"
-                              : invoice.status === "dispute"
+                              : invoice.status === "DISPUTED"
                               ? "bg-red-500"
                               : "bg-gray-400"
                           }`}
-                          style={{ width: `${invoice.progress}%` }}
+                          style={{ width: `${calculateProgress(invoice)}%` }}
                         />
                       </div>
                     </div>
@@ -313,15 +277,22 @@ const InvoiceManager = () => {
                   <div className="flex flex-col items-end gap-4 lg:min-w-[200px]">
                     <div className="text-right">
                       <p className="text-sm text-gray-600 mb-1">Total Amount</p>
-                      <p className="text-3xl font-bold text-gray-900">{invoice.amount}</p>
+                      <p className="text-3xl font-bold text-gray-900">{invoice.totalAmount} {invoice.currency}</p>
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm">
                         View Details
                       </Button>
-                      <Button size="sm">
-                        Manage
-                      </Button>
+                      {invoice.status === 'ACTIVE' && (
+                        <Button size="sm" className="bg-gradient-to-r from-green-600 to-emerald-600">
+                          Release Payment
+                        </Button>
+                      )}
+                      {invoice.status === 'DISPUTED' && (
+                        <Button size="sm" variant="destructive">
+                          View Dispute
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
