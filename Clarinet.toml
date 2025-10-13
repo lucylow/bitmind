@@ -9,6 +9,10 @@ requirements = []
 path = "contracts/escrow.clar"
 clarity_version = 2
 
+[contracts.escrow-secure]
+path = "contracts/escrow-secure.clar"
+clarity_version = 2
+
 [contracts.mock-token]
 path = "contracts/mock-token.clar"
 clarity_version = 2
