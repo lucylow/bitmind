@@ -32,9 +32,9 @@ import {
 // Configuration
 // ======================
 
-const CONTRACT_ADDRESS = process.env.VITE_CONTRACT_ADDRESS || 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
 const CONTRACT_NAME = 'smart-invoice-escrow';
-const NETWORK_TYPE = process.env.VITE_NETWORK || 'testnet';
+const NETWORK_TYPE = import.meta.env.VITE_NETWORK || 'testnet';
 
 /**
  * Get the appropriate Stacks network based on environment

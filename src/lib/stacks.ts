@@ -41,7 +41,7 @@ export const getNetwork = (isMainnet: boolean = false) => {
 
 export const getContractAddress = () => {
   // Update this with your deployed contract address
-  return process.env.REACT_APP_CONTRACT_ADDRESS || 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
+  return import.meta.env.VITE_CONTRACT_ADDRESS || 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
 };
 
 export const getContractName = () => {

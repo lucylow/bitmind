@@ -13,7 +13,7 @@ import {
 } from '@stacks/transactions';
 import { callReadOnlyFunction } from '@stacks/transactions';
 import { StacksTestnet, StacksMainnet, StacksNetwork } from '@stacks/network';
-import { openContractCall } from '@stacks/connect';
+import { openContractCall, showConnect } from '@stacks/connect';
 
 // Configuration
 const NETWORK = new StacksTestnet(); // Change to new StacksMainnet() for production
@@ -25,8 +25,6 @@ export const TOKEN_CONTRACT = 'mock-token';
  * Connect to Hiro Wallet
  */
 export function connectWallet(onFinish?: () => void, onCancel?: () => void) {
-  const { showConnect } = require('@stacks/connect');
-  
   showConnect({
     appDetails: {
       name: 'Smart Invoice Deals for DAOs',
