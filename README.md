@@ -1,73 +1,27 @@
-# Welcome to your Lovable project
+# BitMind Smart Invoice Demo
 
-## Project info
+## Overview
+AI-powered invoice escrow for DAOs on Stacks blockchain. Includes full demo data, smart contract code, API integrations, and UI components.
 
-**URL**: https://lovable.dev/projects/28568ffd-cc8b-4f47-9b8f-084679dd847c
+## Structure
+- `src/` Application frontend/backend source code
+- `contracts/` Clarity smart contracts & tests
+- `data/` Demo mock data files (JSON)
+- `docs/` Documentation and demo guide
+- `scripts/` Build/deployment helpers
 
-## How can I edit this code?
+## Setup Instructions
+1. Install dependencies (e.g., `npm install` or similar)
+2. Run local development server or frontend
+3. Deploy Clarity contracts with provided scripts
+4. Load mock data from `data/` in UI or backend as needed
 
-There are several ways of editing your application.
+## APIs & Integrations
+Includes external API fetch examples without keys (CoinGecko, IPFS, GitHub public API).
 
-**Use Lovable**
+## Demo Data
+Refer to `docs/BitMind_Demo_Data_Guide.md` for detailed mock data usage.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/28568ffd-cc8b-4f47-9b8f-084679dd847c) and start prompting.
+## Notes
+This package is prepared for the Stacks Vibe Coding Hackathon and Lovable upload.
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/28568ffd-cc8b-4f47-9b8f-084679dd847c) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
