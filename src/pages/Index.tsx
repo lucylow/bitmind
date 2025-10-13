@@ -7,8 +7,9 @@ import { useWalletStore } from "@/store/useWalletStore";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatCurrency } from "@/services/publicApis";
 import QuickNav from "@/components/QuickNav";
+import React from "react";
 
-const Index = () => {
+const Index: React.FC = () => {
   const { isConnected } = useWalletStore();
   const { prices, loading: pricesLoading, refetch } = useCryptoPrices();
   
