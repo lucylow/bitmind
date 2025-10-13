@@ -9,14 +9,15 @@ import InvoiceDetails from "./pages/InvoiceDetails";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import InvoiceManager from "./pages/InvoiceManager";
-import Analytics from "./pages/Analytics";
 import Help from "./pages/Help";
 import ApiDemo from "./pages/ApiDemo";
 import Demo from "./pages/Demo";
-// New DeFi Feature Components
-import InvoiceNFTMarketplace from "./components/InvoiceNFTMarketplace";
-import AdvancedAnalyticsDashboard from "./components/AdvancedAnalyticsDashboard";
-import CrossChainSwapPreview from "./components/CrossChainSwapPreview";
+// Advanced DeFi Feature Pages
+import NFTMarketplace from "./pages/NFTMarketplace";
+import Analytics from "./pages/Analytics";
+import YieldOptimizerPage from "./pages/YieldOptimizerPage";
+import CrossChainSwapPage from "./pages/CrossChainSwapPage";
+import Treasury from "./pages/Treasury";
 
 const queryClient = new QueryClient();
 
@@ -33,15 +34,15 @@ const App = () => (
           <Route path="/invoices" element={<InvoiceManager />} />
           <Route path="/create" element={<CreateInvoice />} />
           <Route path="/demo" element={<Demo />} />
-          <Route path="/analytics" element={<AdvancedAnalyticsDashboard />} />
           <Route path="/invoice/:id" element={<InvoiceDetails />} />
           <Route path="/help" element={<Help />} />
           <Route path="/api-demo" element={<ApiDemo />} />
-          {/* New DeFi Feature Routes */}
-          <Route path="/nft-marketplace" element={<InvoiceNFTMarketplace />} />
-          <Route path="/cross-chain-swap" element={<CrossChainSwapPreview />} />
-          <Route path="/treasury" element={<Dashboard />} />
-          <Route path="/yield-optimizer" element={<Dashboard />} />
+          {/* Advanced DeFi Feature Routes */}
+          <Route path="/nft-marketplace" element={<NFTMarketplace />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/yield-optimizer" element={<YieldOptimizerPage />} />
+          <Route path="/cross-chain-swap" element={<CrossChainSwapPage />} />
+          <Route path="/treasury" element={<Treasury />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
