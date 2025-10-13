@@ -6,7 +6,6 @@
  */
 
 import React, { useState } from 'react';
-import { useConnect } from '@stacks/connect-react';
 import { 
   createInvoice, 
   addMilestone, 
@@ -26,7 +25,6 @@ interface Milestone {
 }
 
 export default function CreateInvoice() {
-  const { doOpenAuth } = useConnect();
   const [loading, setLoading] = useState(false);
   const [contractorAddress, setContractorAddress] = useState('');
   const [arbitratorAddress, setArbitratorAddress] = useState('');
@@ -227,7 +225,7 @@ export default function CreateInvoice() {
               <Input
                 placeholder="ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
                 value={contractorAddress}
-                onChange={(e) => setContractorAddress(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContractorAddress(e.target.value)}
               />
             </div>
 
@@ -238,7 +236,7 @@ export default function CreateInvoice() {
               <Input
                 placeholder="Leave empty for no arbitrator"
                 value={arbitratorAddress}
-                onChange={(e) => setArbitratorAddress(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setArbitratorAddress(e.target.value)}
               />
             </div>
 
@@ -262,13 +260,13 @@ export default function CreateInvoice() {
                     className="mb-2"
                     placeholder="Description"
                     value={milestone.description}
-                    onChange={(e) => updateMilestone(milestone.id, 'description', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateMilestone(milestone.id, 'description', e.target.value)}
                   />
                   <Input
                     type="number"
                     placeholder="Amount in STX"
                     value={milestone.amount}
-                    onChange={(e) => updateMilestone(milestone.id, 'amount', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateMilestone(milestone.id, 'amount', e.target.value)}
                     step="0.000001"
                     min="0"
                   />

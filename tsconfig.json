@@ -2,19 +2,50 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["DOM", "ESNext"],
-    "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "strict": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./",
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Paths */
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": ["./src/*"]
+    },
+    "types": ["vite/client"]
   },
-  "include": ["src", "index.html"],
-  "references": []
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "backend",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "src/controllers",
+    "src/middleware/auth.ts",
+    "src/middleware/errorHandler.ts",
+    "src/middleware/requestLogger.ts",
+    "src/routes",
+    "src/server.ts",
+    "src/config/index.ts",
+    "src/services/ai.ts",
+    "src/services/redis.ts",
+    "src/services/stacks.ts",
+    "src/services/ipfs.ts",
+    "src/services/webhooks.ts"
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

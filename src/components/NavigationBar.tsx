@@ -65,6 +65,16 @@ const NavigationBar = () => {
               Create Invoice
             </Link>
             <Link 
+              to="/analytics" 
+              className={`text-base font-medium transition-colors ${
+                isActive('/analytics') 
+                  ? 'text-blue-600 font-semibold' 
+                  : 'text-gray-700 hover:text-gray-900'
+              }`}
+            >
+              Analytics
+            </Link>
+            <Link 
               to="/help" 
               className={`text-base font-medium transition-colors ${
                 isActive('/help') 

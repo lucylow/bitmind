@@ -118,7 +118,7 @@ const InvoiceManager = () => {
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Active</p>
                   <p className="text-3xl font-bold text-blue-600">
-                    {invoices.filter(i => i.status === "funded").length}
+                    {invoices.filter(i => i.status === "ACTIVE").length}
                   </p>
                 </div>
                 <Clock className="w-10 h-10 text-blue-500" />

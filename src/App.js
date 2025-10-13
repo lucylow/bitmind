@@ -11,6 +11,7 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import InvoiceManager from "./pages/InvoiceManager";
 import Help from "./pages/Help";
+import ApiDemo from "./pages/ApiDemo";
 const queryClient = new QueryClient();
-const App = () => (_jsx(QueryClientProvider, { client: queryClient, children: _jsxs(TooltipProvider, { children: [_jsx(Toaster, {}), _jsx(Sonner, {}), _jsx(BrowserRouter, { children: _jsxs(Routes, { children: [_jsx(Route, { path: "/", element: _jsx(Index, {}) }), _jsx(Route, { path: "/landing", element: _jsx(LandingPage, {}) }), _jsx(Route, { path: "/dashboard", element: _jsx(Dashboard, {}) }), _jsx(Route, { path: "/invoices", element: _jsx(InvoiceManager, {}) }), _jsx(Route, { path: "/create", element: _jsx(CreateInvoice, {}) }), _jsx(Route, { path: "/invoice/:id", element: _jsx(InvoiceDetails, {}) }), _jsx(Route, { path: "/help", element: _jsx(Help, {}) })] }) })] }) }));
+const App = () => (_jsx(QueryClientProvider, { client: queryClient, children: _jsxs(TooltipProvider, { children: [_jsx(Toaster, {}), _jsx(Sonner, {}), _jsx(BrowserRouter, { children: _jsxs(Routes, { children: [_jsx(Route, { path: "/", element: _jsx(Index, {}) }), _jsx(Route, { path: "/landing", element: _jsx(LandingPage, {}) }), _jsx(Route, { path: "/dashboard", element: _jsx(Dashboard, {}) }), _jsx(Route, { path: "/invoices", element: _jsx(InvoiceManager, {}) }), _jsx(Route, { path: "/create", element: _jsx(CreateInvoice, {}) }), _jsx(Route, { path: "/invoice/:id", element: _jsx(InvoiceDetails, {}) }), _jsx(Route, { path: "/help", element: _jsx(Help, {}) }), _jsx(Route, { path: "/api-demo", element: _jsx(ApiDemo, {}) })] }) })] }) }));
 export default App;

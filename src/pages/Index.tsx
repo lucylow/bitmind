@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Wallet, GitBranch, Shield, Plus, TrendingUp, RefreshCw } from "lucide-react";
+import { FileText, Wallet, GitBranch, Shield, Plus, TrendingUp, RefreshCw, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import WalletConnect from "@/components/WalletConnect";
 import { useWalletStore } from "@/store/useWalletStore";
@@ -29,6 +29,12 @@ const Index = () => {
           </div>
           {isConnected && (
             <div className="flex gap-3">
+              <Link to="/demo">
+                <Button className="bg-gradient-to-r from-orange-500 to-purple-600">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  AI Demo
+                </Button>
+              </Link>
               <Link to="/create">
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />

@@ -9,8 +9,10 @@ import InvoiceDetails from "./pages/InvoiceDetails";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import InvoiceManager from "./pages/InvoiceManager";
+import Analytics from "./pages/Analytics";
 import Help from "./pages/Help";
 import ApiDemo from "./pages/ApiDemo";
+import Demo from "./pages/Demo";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/invoices" element={<InvoiceManager />} />
           <Route path="/create" element={<CreateInvoice />} />
+          <Route path="/demo" element={<Demo />} />
+          <Route path="/analytics" element={<Analytics />} />
           <Route path="/invoice/:id" element={<InvoiceDetails />} />
           <Route path="/help" element={<Help />} />
           <Route path="/api-demo" element={<ApiDemo />} />

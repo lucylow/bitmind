@@ -303,7 +303,7 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
                 type="password"
                 placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key`}
                 value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
               />
             </div>
 
@@ -313,7 +313,7 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
                 rows={10}
                 placeholder="Paste your invoice text here..."
                 value={invoiceText}
-                onChange={(e) => setInvoiceText(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInvoiceText(e.target.value)}
                 className="font-mono text-sm"
               />
             </div>
