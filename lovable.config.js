@@ -1,6 +1,7 @@
 /**
  * Lovable Build Configuration
  * This file tells Lovable how to build and deploy your BitMind application
+ * Lovable is frontend-only, so we build just the React app
  */
 
 module.exports = {
@@ -14,9 +15,9 @@ module.exports = {
     clean: true  // Clean output directory before each build
   },
   
-  // Build command (uses the unified build that includes backend)
+  // Build command (frontend-only for Lovable)
   build: {
-    command: 'npm run build:unified',
+    command: 'npm run build',
     outputDir: 'dist'
   },
   
@@ -42,7 +43,7 @@ module.exports = {
   exclude: [
     'node_modules',
     'src',
-    'backend/src',
+    'backend',
     'tests',
     '*.md',
     '.git',
