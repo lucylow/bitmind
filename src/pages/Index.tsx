@@ -6,8 +6,15 @@ import { FileText, Wallet, Shield, Plus, TrendingUp, RefreshCw, Sparkles, Award,
 import { Link } from "react-router-dom";
 import { useWalletStore } from "@/store/useWalletStore";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
-import { formatCurrency } from "@/services/publicApis";
 import QuickNav from "@/components/QuickNav";
+
+// Utility function for formatting currency
+const formatCurrency = (amount: number, currency = 'USD') => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+  }).format(amount);
+};
 
 const Index: React.FC = () => {
   const { isConnected } = useWalletStore();
