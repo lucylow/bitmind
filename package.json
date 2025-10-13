@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:frontend": "tsc && vite build",
     "preview": "vite preview",
     "backend:install": "cd backend && npm install",
     "backend:build": "cd backend && npm run build",
-    "build:unified": "npm run build && npm run backend:install && npm run backend:build && npm run copy:backend",
-    "copy:backend": "node scripts/copy-backend.js"
+    "build:unified": "npm run build:frontend && npm run backend:install && npm run backend:build && npm run copy:backend",
+    "copy:backend": "node scripts/copy-backend.js",
+    "verify": "node verify-build.js",
+    "postinstall": "npm run backend:install || true"
   },
   "keywords": [
     "blockchain",
