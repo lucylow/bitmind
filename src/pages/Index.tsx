@@ -1,13 +1,13 @@
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Wallet, Shield, Plus, TrendingUp, RefreshCw, Sparkles } from "lucide-react";
+import { FileText, Wallet, Shield, Plus, TrendingUp, RefreshCw, Sparkles, Award, Coins, Brain, Zap, Users, Target } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useWalletStore } from "@/store/useWalletStore";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatCurrency } from "@/services/publicApis";
 import QuickNav from "@/components/QuickNav";
-import React from "react";
 
 const Index: React.FC = () => {
   const { isConnected } = useWalletStore();
@@ -52,6 +52,92 @@ const Index: React.FC = () => {
             </div>
           )}
         </section>
+
+        {/* DeFi Features Highlight - NEW! */}
+        <Card className="mb-8 bg-gradient-to-r from-purple-100 via-blue-100 to-green-100 border-purple-300">
+          <CardContent className="pt-6">
+            <div className="text-center mb-6">
+              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 mb-3">
+                🏆 Advanced DeFi Features - Hackathon Special
+              </Badge>
+              <h2 className="text-3xl font-bold mb-2">Next-Generation DeFi Primitives</h2>
+              <p className="text-muted-foreground">
+                Unlocking liquidity, governance, and capital efficiency for Bitcoin DAOs
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Link to="/nft-marketplace">
+                <Card className="hover:shadow-xl transition-all cursor-pointer bg-white border-2 hover:border-purple-400">
+                  <CardContent className="pt-6 text-center">
+                    <Award className="w-12 h-12 mx-auto mb-3 text-purple-600" />
+                    <h3 className="font-bold mb-2">Invoice NFTs</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Tokenize & trade receivables for instant liquidity
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      $2.4M Volume
+                    </Badge>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link to="/treasury">
+                <Card className="hover:shadow-xl transition-all cursor-pointer bg-white border-2 hover:border-blue-400">
+                  <CardContent className="pt-6 text-center">
+                    <Users className="w-12 h-12 mx-auto mb-3 text-blue-600" />
+                    <h3 className="font-bold mb-2">MultiSig Treasury</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      3-of-5 approval workflows for secure DAO funding
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      247 Proposals
+                    </Badge>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link to="/yield-optimizer">
+                <Card className="hover:shadow-xl transition-all cursor-pointer bg-white border-2 hover:border-green-400">
+                  <CardContent className="pt-6 text-center">
+                    <Zap className="w-12 h-12 mx-auto mb-3 text-green-600" />
+                    <h3 className="font-bold mb-2">Yield Optimizer</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Earn 7-25% APY on escrowed funds
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      $760K TVL
+                    </Badge>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link to="/analytics">
+                <Card className="hover:shadow-xl transition-all cursor-pointer bg-white border-2 hover:border-orange-400">
+                  <CardContent className="pt-6 text-center">
+                    <Brain className="w-12 h-12 mx-auto mb-3 text-orange-600" />
+                    <h3 className="font-bold mb-2">AI Analytics</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Risk scoring, fraud detection & predictions
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      94% Accuracy
+                    </Badge>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+
+            <div className="mt-6 text-center">
+              <Link to="/cross-chain-swap">
+                <Button className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
+                  <Coins className="w-4 h-4 mr-2" />
+                  Explore Cross-Chain Swaps
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Technical Architecture Overview */}
         <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
@@ -154,6 +240,9 @@ const Index: React.FC = () => {
         </Card>
 
         {/* Key Performance Metrics */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4 text-center">Core Performance Metrics</h2>
+        </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Card className="border-green-200 bg-green-50/50">
             <CardHeader>

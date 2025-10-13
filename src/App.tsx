@@ -13,6 +13,10 @@ import Analytics from "./pages/Analytics";
 import Help from "./pages/Help";
 import ApiDemo from "./pages/ApiDemo";
 import Demo from "./pages/Demo";
+// New DeFi Feature Components
+import InvoiceNFTMarketplace from "./components/InvoiceNFTMarketplace";
+import AdvancedAnalyticsDashboard from "./components/AdvancedAnalyticsDashboard";
+import CrossChainSwapPreview from "./components/CrossChainSwapPreview";
 
 const queryClient = new QueryClient();
 
@@ -29,10 +33,15 @@ const App = () => (
           <Route path="/invoices" element={<InvoiceManager />} />
           <Route path="/create" element={<CreateInvoice />} />
           <Route path="/demo" element={<Demo />} />
-          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/analytics" element={<AdvancedAnalyticsDashboard />} />
           <Route path="/invoice/:id" element={<InvoiceDetails />} />
           <Route path="/help" element={<Help />} />
           <Route path="/api-demo" element={<ApiDemo />} />
+          {/* New DeFi Feature Routes */}
+          <Route path="/nft-marketplace" element={<InvoiceNFTMarketplace />} />
+          <Route path="/cross-chain-swap" element={<CrossChainSwapPreview />} />
+          <Route path="/treasury" element={<Dashboard />} />
+          <Route path="/yield-optimizer" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
