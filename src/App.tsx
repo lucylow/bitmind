@@ -10,6 +10,7 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import InvoiceManager from "./pages/InvoiceManager";
 import Help from "./pages/Help";
+import ApiDemo from "./pages/ApiDemo";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/create" element={<CreateInvoice />} />
           <Route path="/invoice/:id" element={<InvoiceDetails />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/api-demo" element={<ApiDemo />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
