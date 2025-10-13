@@ -1,5 +1,5 @@
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
-import { STACKS_TESTNET, STACKS_MAINNET } from '@stacks/network';
+import { StacksTestnet, StacksMainnet } from '@stacks/network';
 import {
   makeContractCall,
   broadcastTransaction,
@@ -9,7 +9,7 @@ import {
   principalCV,
   stringUtf8CV,
   cvToJSON,
-  fetchCallReadOnlyFunction,
+  callReadOnlyFunction,
 } from '@stacks/transactions';
 
 const appConfig = new AppConfig(['store_write', 'publish_data']);
@@ -36,7 +36,7 @@ export const disconnectWallet = () => {
 };
 
 export const getNetwork = (isMainnet: boolean = false) => {
-  return isMainnet ? STACKS_MAINNET : STACKS_TESTNET;
+  return isMainnet ? new StacksMainnet() : new StacksTestnet();
 };
 
 export const getContractAddress = () => {
@@ -75,7 +75,7 @@ export const createInvoice = async (
   };
 
   const transaction = await makeContractCall(txOptions);
-  return broadcastTransaction({ transaction, network });
+  return broadcastTransaction(transaction, network);
 };
 
 export const addMilestone = async (
@@ -103,7 +103,7 @@ export const addMilestone = async (
   };
 
   const transaction = await makeContractCall(txOptions);
-  return broadcastTransaction({ transaction, network });
+  return broadcastTransaction(transaction, network);
 };
 
 export const fundInvoice = async (invoiceId: number, network: any) => {
@@ -120,7 +120,7 @@ export const fundInvoice = async (invoiceId: number, network: any) => {
   };
 
   const transaction = await makeContractCall(txOptions);
-  return broadcastTransaction({ transaction, network });
+  return broadcastTransaction(transaction, network);
 };
 
 export const approveMilestone = async (
@@ -141,7 +141,7 @@ export const approveMilestone = async (
   };
 
   const transaction = await makeContractCall(txOptions);
-  return broadcastTransaction({ transaction, network });
+  return broadcastTransaction(transaction, network);
 };
 
 export const releaseMilestonePayment = async (
@@ -162,7 +162,7 @@ export const releaseMilestonePayment = async (
   };
 
   const transaction = await makeContractCall(txOptions);
-  return broadcastTransaction({ transaction, network });
+  return broadcastTransaction(transaction, network);
 };
 
 export const raiseDispute = async (
@@ -183,7 +183,7 @@ export const raiseDispute = async (
   };
 
   const transaction = await makeContractCall(txOptions);
-  return broadcastTransaction({ transaction, network });
+  return broadcastTransaction(transaction, network);
 };
 
 export const resolveDispute = async (
@@ -209,7 +209,7 @@ export const resolveDispute = async (
   };
 
   const transaction = await makeContractCall(txOptions);
-  return broadcastTransaction({ transaction, network });
+  return broadcastTransaction(transaction, network);
 };
 
 // Read-only functions
@@ -224,7 +224,7 @@ export const getInvoiceDetails = async (invoiceId: number, network: any) => {
     senderAddress: getContractAddress(),
   };
 
-  const result = await fetchCallReadOnlyFunction(options);
+  const result = await callReadOnlyFunction(options);
   return cvToJSON(result);
 };
 
@@ -242,7 +242,7 @@ export const getMilestoneDetails = async (
     senderAddress: getContractAddress(),
   };
 
-  const result = await fetchCallReadOnlyFunction(options);
+  const result = await callReadOnlyFunction(options);
   return cvToJSON(result);
 };
 
@@ -256,7 +256,7 @@ export const getDisputeDetails = async (invoiceId: number, network: any) => {
     senderAddress: getContractAddress(),
   };
 
-  const result = await fetchCallReadOnlyFunction(options);
+  const result = await callReadOnlyFunction(options);
   return cvToJSON(result);
 };
 

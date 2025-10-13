@@ -10,9 +10,9 @@ import {
   ContractCallOptions,
 } from '@stacks/connect';
 import {
-  STACKS_MAINNET,
-  STACKS_TESTNET,
-  STACKS_DEVNET,
+  StacksMainnet,
+  StacksTestnet,
+  StacksDevnet,
   StacksNetwork,
 } from '@stacks/network';
 import {
@@ -25,7 +25,7 @@ import {
   standardPrincipalCV,
   cvToJSON,
   ClarityValue,
-  fetchCallReadOnlyFunction,
+  callReadOnlyFunction,
 } from '@stacks/transactions';
 
 // ======================
@@ -42,12 +42,12 @@ const NETWORK_TYPE = process.env.VITE_NETWORK || 'testnet';
 export function getNetwork(): StacksNetwork {
   switch (NETWORK_TYPE) {
     case 'mainnet':
-      return STACKS_MAINNET;
+      return new StacksMainnet();
     case 'devnet':
-      return STACKS_DEVNET;
+      return new StacksDevnet();
     case 'testnet':
     default:
-      return STACKS_TESTNET;
+      return new StacksTestnet();
   }
 }
 
@@ -340,7 +340,7 @@ export async function getInvoice(invoiceId: number): Promise<Invoice | null> {
   const network = getNetwork();
 
   try {
-    const result = await fetchCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -384,7 +384,7 @@ export async function getMilestone(
   const network = getNetwork();
 
   try {
-    const result = await fetchCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -421,7 +421,7 @@ export async function getDispute(invoiceId: number): Promise<Dispute | null> {
   const network = getNetwork();
 
   try {
-    const result = await fetchCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -458,7 +458,7 @@ export async function getEscrowBalance(): Promise<number> {
   const network = getNetwork();
 
   try {
-    const result = await fetchCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,

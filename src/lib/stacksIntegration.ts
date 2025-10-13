@@ -11,12 +11,12 @@ import {
   AnchorMode,
   PostConditionMode,
 } from '@stacks/transactions';
-import { fetchCallReadOnlyFunction } from '@stacks/transactions';
-import { STACKS_TESTNET, STACKS_MAINNET, StacksNetwork } from '@stacks/network';
+import { callReadOnlyFunction } from '@stacks/transactions';
+import { StacksTestnet, StacksMainnet, StacksNetwork } from '@stacks/network';
 import { openContractCall } from '@stacks/connect';
 
 // Configuration
-const NETWORK = STACKS_TESTNET; // Change to STACKS_MAINNET for production
+const NETWORK = new StacksTestnet(); // Change to new StacksMainnet() for production
 export const CONTRACT_ADDRESS = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'; // Replace with your deployed contract
 export const ESCROW_CONTRACT = 'escrow';
 export const TOKEN_CONTRACT = 'mock-token';
@@ -208,7 +208,7 @@ export async function refundToPayer(invoiceId: number, userSession: any) {
 export async function getInvoice(invoiceId: number): Promise<any> {
   const functionArgs = [uintCV(invoiceId)];
 
-  const result = await fetchCallReadOnlyFunction({
+  const result = await callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
     contractName: ESCROW_CONTRACT,
     functionName: 'get-invoice',
@@ -226,7 +226,7 @@ export async function getInvoice(invoiceId: number): Promise<any> {
 export async function getTokenBalance(address: string): Promise<any> {
   const functionArgs = [standardPrincipalCV(address)];
 
-  const result = await fetchCallReadOnlyFunction({
+  const result = await callReadOnlyFunction({
     contractAddress: CONTRACT_ADDRESS,
     contractName: TOKEN_CONTRACT,
     functionName: 'get-balance',

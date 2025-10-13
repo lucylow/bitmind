@@ -363,3 +363,14 @@ export const mockContractors = [
         availability: 'available',
     },
 ];
+
+// Mock platform metrics
+export const platformMetrics = {
+    totalInvoices: 156,
+    totalVolume: 287500,
+    successRate: 94.5,
+    activeDAOs: 62,
+    growthRate: 28.3,
+    disputeRate: 3.2,
+    averageCompletionTime: 21,
+};
