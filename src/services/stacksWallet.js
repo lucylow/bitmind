@@ -3,14 +3,14 @@
  * Wallet-based authentication (no API keys needed)
  */
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
-import { STACKS_MAINNET, STACKS_TESTNET } from '@stacks/network';
+import { StacksMainnet, StacksTestnet } from '@stacks/network';
 import { AnchorMode, uintCV, stringAsciiCV } from '@stacks/transactions';
 // App configuration
 const appConfig = new AppConfig(['store_write', 'publish_data']);
 export const userSession = new UserSession({ appConfig });
 // Network configuration
 const isTestnet = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-export const network = isTestnet ? STACKS_TESTNET : STACKS_MAINNET;
+export const network = isTestnet ? new StacksTestnet() : new StacksMainnet();
 /**
  * Connect to Stacks wallet (Hiro, Leather, Xverse, etc.)
  */
