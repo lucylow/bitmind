@@ -8,6 +8,7 @@ import { useWalletStore } from "@/store/useWalletStore";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import QuickNav from "@/components/QuickNav";
 import NavigationBar from "@/components/NavigationBar";
+import DemoModeButton from "@/components/DemoModeButton";
 
 // Utility function for formatting currency
 const formatCurrency = (amount: number, currency = 'USD') => {
@@ -42,6 +43,9 @@ const Index: React.FC = () => {
             </Badge>
             <Badge variant="secondary" className="bg-purple-100 text-purple-800 px-4 py-2 text-sm">
               ₿ Bitcoin-Native Settlement
+            </Badge>
+            <Badge variant="secondary" className="bg-orange-100 text-orange-800 px-4 py-2 text-sm">
+              🔒 Post-Condition Security
             </Badge>
           </div>
           
@@ -79,6 +83,13 @@ const Index: React.FC = () => {
               </Link>
             </div>
           )}
+        
+        {/* Demo Mode for Hackathon Judges - Show for all users */}
+        {isConnected && (
+          <div className="mt-8">
+            <DemoModeButton variant="card" />
+          </div>
+        )}
         </section>
 
         {/* DeFi Features Highlight - NEW! */}
@@ -163,6 +174,54 @@ const Index: React.FC = () => {
                   Explore Cross-Chain Swaps
                 </Button>
               </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* sBTC Showcase - Bitcoin Alignment */}
+        <Card className="mb-6 bg-gradient-to-r from-orange-50 via-orange-100 to-yellow-50 border-2 border-orange-300">
+          <CardContent className="pt-6">
+            <div className="text-center mb-4">
+              <Badge className="bg-orange-600 mb-2">
+                ₿ Powered by Bitcoin via Stacks
+              </Badge>
+              <h2 className="text-2xl font-bold">Why sBTC on Stacks?</h2>
+              <p className="text-muted-foreground mt-1">Unlocking Bitcoin's $1.3T economy for real-world utility</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="bg-white p-4 rounded-lg border border-orange-200">
+                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center mb-3 mx-auto">
+                  <Shield className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold text-center mb-2">Bitcoin Security</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  Every transaction is anchored to Bitcoin blocks, inheriting Bitcoin's security model and finality guarantees
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-orange-200">
+                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center mb-3 mx-auto">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold text-center mb-2">Smart Contract Layer</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  Clarity brings programmability to Bitcoin without modifying the base layer—no reentrancy, decidable execution
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg border border-orange-200">
+                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center mb-3 mx-auto">
+                  <Coins className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-bold text-center mb-2">1:1 Bitcoin Peg</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  sBTC is backed 1:1 by real BTC, enabling Bitcoin-native DeFi without bridging to other chains
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 p-3 bg-white rounded-lg border border-orange-200">
+              <p className="text-sm text-center">
+                <strong>Real-World Impact:</strong> DAOs can now pay contractors in Bitcoin with trustless escrow, 
+                unlocking <strong>$1.3 trillion</strong> of Bitcoin liquidity for productive economic activity.
+              </p>
             </div>
           </CardContent>
         </Card>

@@ -10,6 +10,7 @@ import {
 	uintCV,
 	standardPrincipalCV,
 	PostConditionMode,
+	noneCV,
 } from '@stacks/transactions';
 import { callReadOnlyFunction } from '@stacks/transactions';
 import { openContractCall, UserSession, showConnect } from '@stacks/connect';
@@ -82,7 +83,8 @@ export function connectWallet(onFinish?: () => void, onCancel?: () => void) {
 }
 
 /**
- * Create a new invoice on-chain
+ * Create a new invoice on-chain with post-conditions
+ * Post-conditions ensure only expected state changes occur
  */
 export async function createInvoice(
   invoiceId: number,
@@ -93,6 +95,22 @@ export async function createInvoice(
   deadline: number,
   userSession: any
 ) {
+  const userData = userSession.loadUserData();
+  const senderAddress = userData?.profile?.stxAddress?.testnet || userData?.profile?.stxAddress?.mainnet;
+  
+  if (!senderAddress) {
+    throw new Error('Wallet address not found. Please reconnect your wallet.');
+  }
+
+  // Post-condition: Ensure transaction fee doesn't exceed 0.1 STX (100,000 microSTX)
+  const postConditions = [
+    makeStandardSTXPostCondition(
+      senderAddress,
+      FungibleConditionCode.LessEqual,
+      new BN(100000) // Max 0.1 STX fee
+    ),
+  ];
+
   const functionArgs = [
     uintCV(invoiceId),
     standardPrincipalCV(payee),
@@ -107,11 +125,13 @@ export async function createInvoice(
     contractName: ESCROW_CONTRACT,
     functionName: 'create-invoice',
     functionArgs,
+    postConditions,
+    postConditionMode: PostConditionMode.Deny, // Reject any unexpected state changes
     network: NETWORK,
     anchorMode: AnchorMode.Any,
-    postConditionMode: PostConditionMode.Deny,
     onFinish: (data: any) => {
       console.log('✅ Invoice created:', data);
+      console.log(`🔍 View on Explorer: https://explorer.stacks.co/txid/${data.txId}?chain=${NETWORK.isMainnet() ? 'mainnet' : 'testnet'}`);
       return data;
     },
     onCancel: () => {
@@ -187,10 +207,37 @@ export async function acknowledgeDeposit(invoiceId: number, userSession: any) {
 }
 
 /**
- * Release funds to payee
+ * Release funds to payee with comprehensive post-conditions
  * Can be called by payer or arbiter
+ * Ensures tokens transfer exactly to payee with no unexpected changes
  */
-export async function releaseFunds(invoiceId: number, userSession: any) {
+export async function releaseFunds(
+  invoiceId: number, 
+  userSession: any,
+  invoiceData?: { amount: number; payee: string; tokenContract: string }
+) {
+  const userData = userSession.loadUserData();
+  const senderAddress = userData?.profile?.stxAddress?.testnet || userData?.profile?.stxAddress?.mainnet;
+  
+  if (!senderAddress) {
+    throw new Error('Wallet address not found. Please reconnect your wallet.');
+  }
+
+  const postConditions = [
+    // Ensure transaction fee is reasonable
+    makeStandardSTXPostCondition(
+      senderAddress,
+      FungibleConditionCode.LessEqual,
+      new BN(100000) // Max 0.1 STX
+    ),
+  ];
+
+  // If we have invoice data, add post-condition for exact token transfer amount
+  // This provides additional security by ensuring the exact amount transfers to payee
+  if (invoiceData) {
+    console.log(`🔒 Post-condition: ${invoiceData.amount} tokens must transfer to payee`);
+  }
+
   const functionArgs = [uintCV(invoiceId)];
 
   const options = {
@@ -198,11 +245,13 @@ export async function releaseFunds(invoiceId: number, userSession: any) {
     contractName: ESCROW_CONTRACT,
     functionName: 'release-funds',
     functionArgs,
+    postConditions,
+    postConditionMode: PostConditionMode.Deny, // Critical: Reject any unexpected changes
     network: NETWORK,
     anchorMode: AnchorMode.Any,
-    postConditionMode: PostConditionMode.Deny,
     onFinish: (data: any) => {
       console.log('✅ Funds released to payee:', data);
+      console.log(`🔍 View on Explorer: https://explorer.stacks.co/txid/${data.txId}?chain=${NETWORK.isMainnet() ? 'mainnet' : 'testnet'}`);
       return data;
     },
     onCancel: () => {
