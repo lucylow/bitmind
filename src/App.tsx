@@ -22,6 +22,7 @@ import Treasury from "./pages/Treasury";
 import InvoiceEditorPage from "./pages/InvoiceEditorPage";
 import APIShowcase from "./pages/APIShowcase";
 import RealtimeMonitor from "./pages/RealtimeMonitor";
+import DiscordNotifications from "./pages/DiscordNotifications";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
           <Route path="/invoice-editor" element={<InvoiceEditorPage />} />
           <Route path="/api-showcase" element={<APIShowcase />} />
           <Route path="/realtime-monitor" element={<RealtimeMonitor />} />
+          <Route path="/discord-notifications" element={<DiscordNotifications />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
