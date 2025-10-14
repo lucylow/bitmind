@@ -248,6 +248,16 @@ const Index: React.FC = () => {
                     Test Supabase
                   </Button>
                 </Link>
+                <Link to="/api-showcase">
+                  <Button variant="outline" size="sm">
+                    API Showcase
+                  </Button>
+                </Link>
+                <Link to="/realtime-monitor">
+                  <Button variant="outline" size="sm">
+                    Live Monitor
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>

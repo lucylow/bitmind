@@ -155,24 +155,31 @@ const SupabaseTest: React.FC = () => {
                 <RefreshCw className={`w-4 h-4 mr-2 ${connectionStatus === 'testing' ? 'animate-spin' : ''}`} />
                 Test Connection
               </Button>
-              <Button variant="outline" asChild>
-                <a 
-                  href="https://wlvuswftjdpnqlyrzquz.supabase.co" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  Open Supabase Dashboard
-                </a>
-              </Button>
+              {import.meta.env.VITE_SUPABASE_URL && (
+                <Button variant="outline" asChild>
+                  <a 
+                    href={import.meta.env.VITE_SUPABASE_URL.replace('/rest/v1', '')} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Open Supabase Dashboard
+                  </a>
+                </Button>
+              )}
             </div>
 
             {/* Configuration Info */}
             <div className="p-4 border rounded-lg bg-gray-50">
               <h4 className="font-semibold mb-2 text-sm">Configuration</h4>
               <div className="space-y-1 text-xs text-muted-foreground font-mono">
-                <p>URL: https://wlvuswftjdpnqlyrzquz.supabase.co</p>
-                <p>Project: wlvuswftjdpnqlyrzquz</p>
+                <p>URL: {import.meta.env.VITE_SUPABASE_URL || 'Not configured'}</p>
+                <p>Status: {import.meta.env.VITE_SUPABASE_URL ? '✓ Configured' : '✗ Missing env vars'}</p>
               </div>
+              {!import.meta.env.VITE_SUPABASE_URL && (
+                <p className="text-xs text-orange-600 mt-2">
+                  ⚠️ Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

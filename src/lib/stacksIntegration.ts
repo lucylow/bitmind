@@ -1,25 +1,65 @@
-/**
- * Stacks.js Integration for Smart Invoice Escrow
- * Provides functions to interact with the Clarity escrow contract
- */
-
+import BN from 'bn.js';
+import { SecurityValidator } from '@/lib/security';
 import {
-  makeContractCall,
-  broadcastTransaction,
-  standardPrincipalCV,
-  uintCV,
-  AnchorMode,
-  PostConditionMode,
+	AnchorMode,
+	ContractCallOptions,
+	FungibleConditionCode,
+	makeStandardSTXPostCondition,
+	principalCV,
+	someCV,
+	uintCV,
+	standardPrincipalCV,
+	PostConditionMode,
 } from '@stacks/transactions';
 import { callReadOnlyFunction } from '@stacks/transactions';
-import { StacksTestnet, StacksMainnet, StacksNetwork } from '@stacks/network';
-import { openContractCall, showConnect } from '@stacks/connect';
+import { openContractCall, UserSession, showConnect } from '@stacks/connect';
+import { StacksTestnet } from '@stacks/network';
+import { ParsedInvoice } from '@/types/invoice';
 
-// Configuration
-const NETWORK = new StacksTestnet(); // Change to new StacksMainnet() for production
-export const CONTRACT_ADDRESS = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'; // Replace with your deployed contract
+// These should be configured via env in real app
+export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'SP000000000000000000002Q6VF78';
+export const NETWORK = new StacksTestnet();
 export const ESCROW_CONTRACT = 'escrow';
 export const TOKEN_CONTRACT = 'mock-token';
+
+export async function createInvoiceSecure(invoiceData: ParsedInvoice, userSession: UserSession): Promise<string> {
+	if (!SecurityValidator.validateStacksAddress(invoiceData.payee)) {
+		throw new Error('Invalid payee address');
+	}
+	if (!SecurityValidator.validateAmount(invoiceData.amount)) {
+		throw new Error('Invalid amount');
+	}
+	if (!SecurityValidator.validateDeadline(invoiceData.deadline)) {
+		throw new Error('Invalid deadline');
+	}
+
+	const stxAddress = (userSession.loadUserData() as any)?.profile?.stxAddress?.testnet;
+	const postConditions = [
+		makeStandardSTXPostCondition(stxAddress, FungibleConditionCode.LessEqual, new BN(100000)),
+	];
+
+	const txOptions = {
+		contractAddress: CONTRACT_ADDRESS,
+		contractName: 'escrow-secure',
+		functionName: 'create-invoice',
+		functionArgs: [
+			uintCV(invoiceData.invoice_id),
+			principalCV(invoiceData.payee),
+			uintCV(invoiceData.amount),
+			principalCV(invoiceData.token_contract || CONTRACT_ADDRESS + '.sbtc-token'),
+			invoiceData.arbiter ? someCV(principalCV(invoiceData.arbiter)) : (undefined as any),
+			uintCV(Math.floor(new Date(invoiceData.deadline).getTime() / 1000)),
+		],
+		postConditions,
+		network: NETWORK,
+		anchorMode: AnchorMode.Any,
+	} as any;
+
+	const txId = (await openContractCall(txOptions)) as unknown as string;
+	return txId;
+}
+
+// Remove duplicate legacy block to avoid redeclarations
 
 /**
  * Connect to Hiro Wallet

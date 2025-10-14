@@ -1,3 +1,89 @@
+(define-constant ERR-NOT-AUTHORIZED (err u100))
+(define-constant ERR-INVOICE-EXISTS (err u101))
+(define-constant ERR-INVALID-AMOUNT (err u102))
+(define-constant ERR-DEADLINE-PASSED (err u103))
+
+(define-constant MAX-INVOICE-AMOUNT u1000000000)
+(define-constant MIN-DEADLINE-BUFFER u144)
+
+(define-map invoices
+  { invoice-id: uint }
+  {
+    payer: principal,
+    payee: principal,
+    amount: uint,
+    token-contract: principal,
+    arbiter: (optional principal),
+    deadline: uint,
+    status: (string-ascii 20),
+    created-at: uint,
+    security-hash: (buff 32)
+  }
+)
+
+(define-public (create-invoice-secure
+  (invoice-id uint)
+  (payee principal)
+  (amount uint)
+  (token-contract principal)
+  (arbiter (optional principal))
+  (deadline uint)
+  (security-hash (buff 32)))
+  (let (
+    (current-block block-height)
+    (invoice-exists (map-get? invoices { invoice-id: invoice-id }))
+  )
+    (asserts! (is-none invoice-exists) ERR-INVOICE-EXISTS)
+    (asserts! (> amount u0) ERR-INVALID-AMOUNT)
+    (asserts! (<= amount MAX-INVOICE-AMOUNT) ERR-INVALID-AMOUNT)
+    (asserts! (> deadline (+ current-block MIN-DEADLINE-BUFFER)) ERR-DEADLINE-PASSED)
+    (asserts! (not (is-eq tx-sender payee)) ERR-NOT-AUTHORIZED)
+    (map-set invoices
+      { invoice-id: invoice-id }
+      {
+        payer: tx-sender,
+        payee: payee,
+        amount: amount,
+        token-contract: token-contract,
+        arbiter: arbiter,
+        deadline: deadline,
+        status: "created",
+        created-at: current-block,
+        security-hash: security-hash
+      }
+    )
+    (print { event: "invoice-created", invoice-id: invoice-id, payer: tx-sender, payee: payee, amount: amount })
+    (ok invoice-id)
+  )
+)
+
+(define-public (release-funds-secure (invoice-id uint) (auth-hash (buff 32)))
+  (let (
+    (invoice (unwrap! (map-get? invoices { invoice-id: invoice-id }) ERR-NOT-AUTHORIZED))
+    (payer (get payer invoice))
+    (payee (get payee invoice))
+    (amount (get amount invoice))
+    (token-contract (get token-contract invoice))
+    (status (get status invoice))
+    (security-hash (get security-hash invoice))
+  )
+    (asserts! (or (is-eq tx-sender payer) (is-some (get arbiter invoice))) ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq status "funded") ERR-NOT-AUTHORIZED)
+    (asserts! (is-eq auth-hash security-hash) ERR-NOT-AUTHORIZED)
+    (map-set invoices { invoice-id: invoice-id } (merge invoice { status: "released" }))
+    (match (contract-call? token-contract transfer amount (as-contract tx-sender) payee none)
+      success (begin
+        (print { event: "funds-released", invoice-id: invoice-id, amount: amount, payee: payee })
+        (ok true)
+      )
+      error (begin
+        (map-set invoices { invoice-id: invoice-id } (merge invoice { status: "funded" }))
+        (err error)
+      )
+    )
+  )
+)
+
 ;; Secure Single-Milestone Escrow with Governance & Security Controls
 ;; Production-ready version with pause, multisig, and token whitelist
 

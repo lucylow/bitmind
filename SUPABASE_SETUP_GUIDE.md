@@ -34,18 +34,21 @@ Then navigate to: `http://localhost:5173/supabase-test`
 
 Or click the **"Test Supabase"** button on the home page.
 
-### Step 2: Create Environment Variables (Optional)
+### Step 2: Create Environment Variables (Required for Your Setup)
 
-For production or to use different credentials, create a `.env` file:
+Create a `.env.local` file in your project root:
 
 ```env
-# .env
-VITE_SUPABASE_URL=https://wlvuswftjdpnqlyrzquz.supabase.co
+# .env.local
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
 VITE_NETWORK=testnet
 ```
 
-**Note:** The `.env` file is gitignored by default for security.
+**Important:** 
+- Use `.env.local` (not `.env`) for local development
+- This file is gitignored by default for security
+- Get your credentials from https://app.supabase.com/project/_/settings/api
 
 ## 📊 Your Supabase Database
 

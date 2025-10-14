@@ -12,12 +12,94 @@ const InvoiceDetails = () => {
   const { id } = useParams();
   const [showDispute, setShowDispute] = useState(false);
 
-  // Mock invoice data (in real app, fetch from blockchain)
-  const invoice = {
+  // Mock invoice database (in real app, fetch from blockchain)
+  const invoiceDatabase: Record<string, any> = {
+    "2025-300": {
+      id: "2025-300",
+      status: "released",
+      amount: "0.85 sBTC",
+      usdAmount: "$52,300",
+      dao: "DeFi Protocol DAO",
+      description: "Smart contract audit + security review",
+      issuer: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      client: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
+      arbitrator: "SP3FGQ8Z7JY9BWYZ5WM53E0M9NK7WHJF0691NZ159",
+      totalAmount: 52300,
+      releasedAmount: 52300,
+      createdAt: "2025-01-10",
+      milestones: [
+        { id: 1, description: "Initial security assessment", amount: 17433, status: "released" },
+        { id: 2, description: "Smart contract audit", amount: 17433, status: "released" },
+        { id: 3, description: "Final security review and documentation", amount: 17434, status: "released" },
+      ],
+    },
+    "2025-299": {
+      id: "2025-299",
+      status: "funded",
+      amount: "0.42 sBTC",
+      usdAmount: "$25,800",
+      dao: "NFT Marketplace Collective",
+      description: "Website redesign + mobile responsive",
+      issuer: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      client: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
+      arbitrator: "SP3FGQ8Z7JY9BWYZ5WM53E0M9NK7WHJF0691NZ159",
+      totalAmount: 25800,
+      releasedAmount: 17200,
+      createdAt: "2025-01-12",
+      milestones: [
+        { id: 1, description: "Design mockups and wireframes", amount: 8600, status: "released" },
+        { id: 2, description: "Frontend implementation", amount: 8600, status: "released" },
+        { id: 3, description: "Mobile responsive testing", amount: 8600, status: "approved" },
+      ],
+    },
+    "2025-298": {
+      id: "2025-298",
+      status: "verified",
+      amount: "0.65 sBTC",
+      usdAmount: "$39,900",
+      dao: "Web3 Education Guild",
+      description: "Tutorial series + documentation",
+      issuer: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      client: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
+      arbitrator: "SP3FGQ8Z7JY9BWYZ5WM53E0M9NK7WHJF0691NZ159",
+      totalAmount: 39900,
+      releasedAmount: 0,
+      createdAt: "2025-01-13",
+      milestones: [
+        { id: 1, description: "Tutorial content creation", amount: 13300, status: "approved" },
+        { id: 2, description: "Video production and editing", amount: 13300, status: "approved" },
+        { id: 3, description: "Documentation and deployment", amount: 13300, status: "approved" },
+      ],
+    },
+    "2025-297": {
+      id: "2025-297",
+      status: "created",
+      amount: "0.28 sBTC",
+      usdAmount: "$17,200",
+      dao: "Gaming DAO Treasury",
+      description: "Token economics modeling",
+      issuer: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      client: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
+      arbitrator: "SP3FGQ8Z7JY9BWYZ5WM53E0M9NK7WHJF0691NZ159",
+      totalAmount: 17200,
+      releasedAmount: 0,
+      createdAt: "2025-01-14",
+      milestones: [
+        { id: 1, description: "Economic model research", amount: 5733, status: "pending" },
+        { id: 2, description: "Token mechanics design", amount: 5733, status: "pending" },
+        { id: 3, description: "Simulation and testing", amount: 5734, status: "pending" },
+      ],
+    },
+  };
+
+  // Get invoice from database or use default
+  const invoice = invoiceDatabase[id || ""] || {
     id: id || "INV-001",
     status: "in-progress",
     amount: "$12,500",
+    usdAmount: "$12,500",
     dao: "DeFi DAO",
+    description: "General service invoice",
     issuer: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
     client: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
     arbitrator: "SP3FGQ8Z7JY9BWYZ5WM53E0M9NK7WHJF0691NZ159",
@@ -32,14 +114,19 @@ const InvoiceDetails = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, any> = {
-      "completed": "default",
-      "in-progress": "secondary",
-      "pending": "outline",
-      "disputed": "destructive",
+    const statusConfig: Record<string, { variant: any; className: string }> = {
+      "released": { variant: "default", className: "bg-green-600" },
+      "verified": { variant: "default", className: "bg-blue-600" },
+      "funded": { variant: "secondary", className: "bg-purple-600" },
+      "created": { variant: "outline", className: "" },
+      "completed": { variant: "default", className: "bg-green-600" },
+      "in-progress": { variant: "secondary", className: "" },
+      "pending": { variant: "outline", className: "" },
+      "disputed": { variant: "destructive", className: "" },
     };
+    const config = statusConfig[status] || { variant: "outline", className: "" };
     return (
-      <Badge variant={variants[status] || "outline"}>
+      <Badge variant={config.variant} className={config.className}>
         {status}
       </Badge>
     );
@@ -74,6 +161,12 @@ const InvoiceDetails = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
+                  {invoice.description && (
+                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                      <p className="text-sm font-semibold text-blue-900 mb-1">Description</p>
+                      <p className="text-sm text-blue-800">{invoice.description}</p>
+                    </div>
+                  )}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">Issuer</p>
@@ -120,18 +213,25 @@ const InvoiceDetails = () => {
               <CardContent className="space-y-4">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Total Amount</p>
-                  <p className="text-2xl font-bold">${invoice.totalAmount.toLocaleString()}</p>
+                  <p className="text-2xl font-bold">{invoice.amount || `$${invoice.totalAmount.toLocaleString()}`}</p>
+                  <p className="text-sm text-muted-foreground">{invoice.usdAmount || `≈ $${invoice.totalAmount.toLocaleString()}`}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Released</p>
                   <p className="text-xl font-semibold text-green-600">
                     ${invoice.releasedAmount.toLocaleString()}
                   </p>
+                  <p className="text-xs text-muted-foreground">
+                    {invoice.releasedAmount > 0 ? `≈ ${((invoice.releasedAmount / invoice.totalAmount) * parseFloat(invoice.amount?.replace(/[^\d.]/g, '') || '0')).toFixed(2)} sBTC` : '0 sBTC'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Remaining</p>
                   <p className="text-xl font-semibold">
                     ${(invoice.totalAmount - invoice.releasedAmount).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {invoice.totalAmount > invoice.releasedAmount ? `≈ ${(((invoice.totalAmount - invoice.releasedAmount) / invoice.totalAmount) * parseFloat(invoice.amount?.replace(/[^\d.]/g, '') || '0')).toFixed(2)} sBTC` : '0 sBTC'}
                   </p>
                 </div>
                 <div className="pt-4 border-t border-border">
