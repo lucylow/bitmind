@@ -12,6 +12,7 @@ import InvoiceManager from "./pages/InvoiceManager";
 import Help from "./pages/Help";
 import ApiDemo from "./pages/ApiDemo";
 import Demo from "./pages/Demo";
+import SupabaseTest from "./pages/SupabaseTest";
 // Advanced DeFi Feature Pages
 import NFTMarketplace from "./pages/NFTMarketplace";
 import Analytics from "./pages/Analytics";
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/invoice/:id" element={<InvoiceDetails />} />
           <Route path="/help" element={<Help />} />
           <Route path="/api-demo" element={<ApiDemo />} />
+          <Route path="/supabase-test" element={<SupabaseTest />} />
           {/* Advanced DeFi Feature Routes */}
           <Route path="/nft-marketplace" element={<NFTMarketplace />} />
           <Route path="/analytics" element={<Analytics />} />

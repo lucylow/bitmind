@@ -243,6 +243,11 @@ const Index: React.FC = () => {
                     View API Demo
                   </Button>
                 </Link>
+                <Link to="/supabase-test">
+                  <Button variant="outline" size="sm">
+                    Test Supabase
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>
