@@ -4,6 +4,7 @@ import { SmartContractEventMonitor } from './contractEventMonitor';
 import { createInvoiceSecure } from '@/lib/stacksIntegration';
 import { ParsedInvoice } from '@/types/invoice';
 import { UserSession } from '@stacks/connect';
+import { discordNotifications } from '@/lib/discord/discordNotificationService';
 
 export async function createInvoiceWithMonitoring(
 	invoiceData: ParsedInvoice,
@@ -21,10 +22,20 @@ export async function createInvoiceWithMonitoring(
 		await hiroAPI.initializeWebSocket();
 	}
 
-	// Track this specific invoice
+	// Track this specific invoice with Discord notifications
 	await monitor.trackInvoiceLifecycle(invoiceData.invoice_id.toString(), {
-		onCreated: (data) => {
+		onCreated: async (data) => {
 			console.log('✅ Invoice created on-chain:', data);
+			
+			// Send Discord notification
+			await discordNotifications.notifyInvoiceCreated({
+				invoice_id: invoiceData.invoice_id,
+				amount: `${invoiceData.amount / 100000000} sBTC`,
+				dao: 'BitMind DAO',
+				payee: invoiceData.payee,
+				description: invoiceData.milestone_description,
+			});
+			
 			// Emit custom event for UI updates
 			window.dispatchEvent(
 				new CustomEvent('invoice-created', {
@@ -36,8 +47,17 @@ export async function createInvoiceWithMonitoring(
 				})
 			);
 		},
-		onFunded: (data) => {
+		onFunded: async (data) => {
 			console.log('💰 Invoice funded:', data);
+			
+			// Send Discord notification
+			await discordNotifications.notifyInvoiceFunded({
+				invoice_id: invoiceData.invoice_id,
+				amount: `${invoiceData.amount / 100000000} sBTC`,
+				dao: 'BitMind DAO',
+				txId: data.tx_id,
+			});
+			
 			window.dispatchEvent(
 				new CustomEvent('invoice-funded', {
 					detail: {
@@ -48,8 +68,18 @@ export async function createInvoiceWithMonitoring(
 				})
 			);
 		},
-		onReleased: (data) => {
+		onReleased: async (data) => {
 			console.log('🎉 Payment released:', data);
+			
+			// Send Discord notification
+			await discordNotifications.notifyPaymentReleased({
+				invoice_id: invoiceData.invoice_id,
+				amount: `${invoiceData.amount / 100000000} sBTC`,
+				dao: 'BitMind DAO',
+				payee: invoiceData.payee,
+				txId: data.tx_id,
+			});
+			
 			window.dispatchEvent(
 				new CustomEvent('invoice-released', {
 					detail: {
@@ -60,8 +90,17 @@ export async function createInvoiceWithMonitoring(
 				})
 			);
 		},
-		onDisputed: (data) => {
+		onDisputed: async (data) => {
 			console.log('⚠️ Dispute raised:', data);
+			
+			// Send Discord notification
+			await discordNotifications.notifyDispute({
+				invoice_id: invoiceData.invoice_id,
+				amount: `${invoiceData.amount / 100000000} sBTC`,
+				dao: 'BitMind DAO',
+				arbiter: invoiceData.arbiter,
+			}, 'Dispute raised on-chain');
+			
 			window.dispatchEvent(
 				new CustomEvent('invoice-disputed', {
 					detail: {

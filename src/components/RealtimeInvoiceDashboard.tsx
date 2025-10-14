@@ -4,7 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BitMindHiroIntegration, hiroAPI } from '@/lib/hiro/hiroAPI';
 import { InvoiceBlockchainMonitor } from '@/lib/hiro/invoiceMonitoring';
-import { Activity, ExternalLink, RefreshCw } from 'lucide-react';
+import { discordNotifications } from '@/lib/discord/discordNotificationService';
+import { Activity, ExternalLink, RefreshCw, MessageSquare } from 'lucide-react';
 
 interface InvoiceEvent {
 	id: string;
@@ -22,8 +23,10 @@ export function RealtimeInvoiceDashboard() {
 		'connecting'
 	);
 	const [monitor, setMonitor] = useState<InvoiceBlockchainMonitor | null>(null);
+	const [discordEnabled, setDiscordEnabled] = useState(false);
 
 	useEffect(() => {
+		setDiscordEnabled(discordNotifications.isEnabled());
 		initializeHiroMonitoring();
 
 		return () => {
@@ -41,8 +44,8 @@ export function RealtimeInvoiceDashboard() {
 			const invoiceMonitor = new InvoiceBlockchainMonitor(hiroAPI, contractAddress);
 			setMonitor(invoiceMonitor);
 
-			// Subscribe to real-time updates
-			await hiroAPI.subscribeToInvoiceTransactions(contractAddress, (event: any) => {
+			// Subscribe to real-time updates with Discord notifications
+			await hiroAPI.subscribeToInvoiceTransactions(contractAddress, async (event: any) => {
 				const newEvent: InvoiceEvent = {
 					id: event.tx_id || `event-${Date.now()}`,
 					type: determineEventType(event),
@@ -54,6 +57,31 @@ export function RealtimeInvoiceDashboard() {
 				};
 
 				setInvoiceEvents((prev) => [newEvent, ...prev.slice(0, 49)]); // Keep last 50 events
+
+				// Send Discord notification based on event type
+				if (discordEnabled && event.tx_status === 'success') {
+					const notificationData = {
+						id: extractInvoiceId(event),
+						amount: extractAmount(event),
+						dao: 'BitMind DAO',
+						txId: event.tx_id,
+					};
+
+					switch (newEvent.type) {
+						case 'created':
+							await discordNotifications.notifyInvoiceCreated(notificationData);
+							break;
+						case 'funded':
+							await discordNotifications.notifyInvoiceFunded(notificationData);
+							break;
+						case 'released':
+							await discordNotifications.notifyPaymentReleased(notificationData);
+							break;
+						case 'disputed':
+							await discordNotifications.notifyDispute(notificationData);
+							break;
+					}
+				}
 			});
 
 			// Subscribe to mempool for pending transactions
@@ -171,6 +199,14 @@ export function RealtimeInvoiceDashboard() {
 							<p className="font-semibold">{connectionStatus === 'connected' ? 'Active' : 'Inactive'}</p>
 						</div>
 					</div>
+					{discordEnabled && (
+						<div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg flex items-center gap-2">
+							<MessageSquare className="w-4 h-4 text-purple-600" />
+							<span className="text-sm font-medium text-purple-900">
+								Discord notifications enabled - DAO will be notified of all events
+							</span>
+						</div>
+					)}
 				</CardContent>
 			</Card>
 

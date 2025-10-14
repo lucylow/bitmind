@@ -258,6 +258,11 @@ const Index: React.FC = () => {
                     Live Monitor
                   </Button>
                 </Link>
+                <Link to="/discord-notifications">
+                  <Button variant="outline" size="sm">
+                    Discord Notify
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>

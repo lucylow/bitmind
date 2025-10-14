@@ -7,7 +7,9 @@ import {
   FileText, 
   BarChart3, 
   HelpCircle,
-  ArrowRight
+  ArrowRight,
+  MessageSquare,
+  Activity
 } from 'lucide-react';
 
 interface QuickNavItem {
@@ -56,6 +58,22 @@ const QuickNav = () => {
       icon: <BarChart3 className="w-8 h-8" />,
       path: '/analytics',
       color: 'from-indigo-500 to-blue-600'
+    },
+    {
+      title: 'Discord Notifications',
+      description: 'Real-time DAO notifications with Discord webhooks',
+      icon: <MessageSquare className="w-8 h-8" />,
+      path: '/discord-notifications',
+      color: 'from-purple-500 to-violet-600',
+      badge: 'New'
+    },
+    {
+      title: 'Live Monitor',
+      description: 'Real-time blockchain monitoring via Hiro WebSocket',
+      icon: <Activity className="w-8 h-8" />,
+      path: '/realtime-monitor',
+      color: 'from-orange-500 to-red-600',
+      badge: 'Live'
     },
     {
       title: 'Documentation',
