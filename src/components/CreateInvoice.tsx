@@ -17,6 +17,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { 
+  validateWalletAddress, 
+  validateAmount, 
+  validateMilestone,
+  sanitizeString,
+  formatValidationError
+} from '@/lib/validation';
+import { executeBlockchainTransaction } from '@/lib/blockchainErrorHandler';
+import { TransactionStatus, type TransactionState } from '@/components/TransactionStatus';
+import { useWalletStore } from '@/store/useWalletStore';
 
 interface Milestone {
   id: string;
@@ -25,6 +35,7 @@ interface Milestone {
 }
 
 export default function CreateInvoice() {
+  const { network } = useWalletStore();
   const [loading, setLoading] = useState(false);
   const [contractorAddress, setContractorAddress] = useState('');
   const [arbitratorAddress, setArbitratorAddress] = useState('');
@@ -33,6 +44,9 @@ export default function CreateInvoice() {
   ]);
   const [createdInvoiceId, setCreatedInvoiceId] = useState<number | null>(null);
   const [step, setStep] = useState<'create' | 'milestones' | 'fund'>('create');
+  const [txState, setTxState] = useState<TransactionState>('idle');
+  const [txId, setTxId] = useState<string | undefined>();
+  const [txError, setTxError] = useState<any>();
 
   // Calculate total amount
   const totalAmount = milestones.reduce((sum, m) => {
@@ -64,44 +78,70 @@ export default function CreateInvoice() {
 
   // Step 1: Create invoice
   const handleCreateInvoice = async () => {
-    if (!contractorAddress) {
-      toast.error('Please enter contractor address');
+    // Validate contractor address
+    const contractorValidation = validateWalletAddress(contractorAddress, network === 'mainnet' ? 'mainnet' : 'testnet');
+    if (!contractorValidation.isValid) {
+      toast.error(formatValidationError('Contractor address', contractorValidation));
       return;
     }
 
-    if (totalAmount <= 0) {
-      toast.error('Total amount must be greater than 0');
+    // Validate arbitrator address if provided
+    if (arbitratorAddress && arbitratorAddress.trim()) {
+      const arbitratorValidation = validateWalletAddress(arbitratorAddress, network === 'mainnet' ? 'mainnet' : 'testnet');
+      if (!arbitratorValidation.isValid) {
+        toast.error(formatValidationError('Arbitrator address', arbitratorValidation));
+        return;
+      }
+    }
+
+    // Validate total amount
+    const amountValidation = validateAmount(totalAmount, 0);
+    if (!amountValidation.isValid) {
+      toast.error(formatValidationError('Total amount', amountValidation));
       return;
     }
 
+    setTxState('pending');
     setLoading(true);
+    setTxError(undefined);
 
-    try {
-      const totalMicroStx = stxToMicroStx(totalAmount);
-      
-      await createInvoice(
-        contractorAddress,
-        totalMicroStx,
-        arbitratorAddress || undefined,
-        (data) => {
-          console.log('Invoice created:', data);
+    const result = await executeBlockchainTransaction(
+      async () => {
+        const totalMicroStx = stxToMicroStx(totalAmount);
+        return new Promise((resolve, reject) => {
+          createInvoice(
+            sanitizeString(contractorAddress),
+            totalMicroStx,
+            arbitratorAddress ? sanitizeString(arbitratorAddress) : undefined,
+            (data) => {
+              setCreatedInvoiceId(0); // Get from actual result in production
+              resolve({ txId: data?.txId, data });
+            },
+            () => reject(new Error('User rejected transaction'))
+          );
+        });
+      },
+      {
+        onSuccess: (result: any) => {
+          setTxState('success');
+          setTxId(result?.txId);
           toast.success('Invoice created successfully!');
-          // Parse invoice ID from transaction result
-          // In production, you'd get this from the transaction result
-          setCreatedInvoiceId(0); // Placeholder - get from actual result
-          setStep('milestones');
-          setLoading(false);
+          setTimeout(() => {
+            setStep('milestones');
+            setTxState('idle');
+            setLoading(false);
+          }, 2000);
         },
-        () => {
-          toast.error('Transaction cancelled');
+        onError: (error) => {
+          setTxState('error');
+          setTxError(error);
           setLoading(false);
+          if (error.type !== 'user_rejected') {
+            toast.error(error.message);
+          }
         }
-      );
-    } catch (error) {
-      console.error('Error creating invoice:', error);
-      toast.error('Failed to create invoice');
-      setLoading(false);
-    }
+      }
+    );
   };
 
   // Step 2: Add milestones
@@ -111,39 +151,59 @@ export default function CreateInvoice() {
       return;
     }
 
+    // Validate all milestones
+    for (const milestone of milestones) {
+      const validation = validateMilestone(milestone.description, milestone.amount);
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Invalid milestone data');
+        return;
+      }
+    }
+
+    setTxState('pending');
     setLoading(true);
-    let addedCount = 0;
+    setTxError(undefined);
 
-    try {
-      for (const milestone of milestones) {
-        if (!milestone.description || !milestone.amount) {
-          toast.error('All milestones must have description and amount');
-          setLoading(false);
-          return;
-        }
+    let successCount = 0;
 
-        await addMilestone(
-          createdInvoiceId,
-          milestone.description,
-          stxToMicroStx(parseFloat(milestone.amount)),
-          () => {
-            addedCount++;
-            if (addedCount === milestones.length) {
-              toast.success('All milestones added!');
-              setStep('fund');
-              setLoading(false);
+    for (const milestone of milestones) {
+      const result = await executeBlockchainTransaction(
+        async () => {
+          return new Promise((resolve, reject) => {
+            addMilestone(
+              createdInvoiceId,
+              sanitizeString(milestone.description),
+              stxToMicroStx(parseFloat(milestone.amount)),
+              (data) => resolve({ txId: data?.txId, data }),
+              () => reject(new Error('User rejected transaction'))
+            );
+          });
+        },
+        {
+          onSuccess: () => {
+            successCount++;
+            if (successCount === milestones.length) {
+              setTxState('success');
+              toast.success('All milestones added successfully!');
+              setTimeout(() => {
+                setStep('fund');
+                setTxState('idle');
+                setLoading(false);
+              }, 2000);
             }
           },
-          () => {
-            toast.error('Milestone addition cancelled');
+          onError: (error) => {
+            setTxState('error');
+            setTxError(error);
             setLoading(false);
+            if (error.type !== 'user_rejected') {
+              toast.error(`Failed to add milestone: ${error.message}`);
+            }
           }
-        );
-      }
-    } catch (error) {
-      console.error('Error adding milestones:', error);
-      toast.error('Failed to add milestones');
-      setLoading(false);
+        }
+      );
+
+      if (!result.success) break;
     }
   };
 
@@ -227,6 +287,9 @@ export default function CreateInvoice() {
                 value={contractorAddress}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContractorAddress(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Must be a valid Stacks {network === 'mainnet' ? 'mainnet (SP)' : 'testnet (ST)'} address
+              </p>
             </div>
 
             <div>
@@ -234,10 +297,13 @@ export default function CreateInvoice() {
                 Arbitrator Address (Optional)
               </label>
               <Input
-                placeholder="Leave empty for no arbitrator"
+                placeholder="SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7"
                 value={arbitratorAddress}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setArbitratorAddress(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Optional third-party for dispute resolution
+              </p>
             </div>
 
             <div className="border-t pt-4">
@@ -294,7 +360,7 @@ export default function CreateInvoice() {
 
             <Button
               onClick={handleCreateInvoice}
-              disabled={loading}
+              disabled={loading || txState === 'pending'}
               className="w-full"
             >
               {loading ? (
@@ -306,6 +372,19 @@ export default function CreateInvoice() {
                 'Create Invoice'
               )}
             </Button>
+
+            {txState !== 'idle' && (
+              <TransactionStatus
+                state={txState}
+                txId={txId}
+                error={txError}
+                title="Creating Invoice"
+                successMessage="Invoice created successfully!"
+                pendingMessage="Creating invoice on blockchain..."
+                onRetry={handleCreateInvoice}
+                onClose={() => setTxState('idle')}
+              />
+            )}
           </div>
         )}
 
@@ -336,7 +415,7 @@ export default function CreateInvoice() {
 
             <Button
               onClick={handleAddMilestones}
-              disabled={loading}
+              disabled={loading || txState === 'pending'}
               className="w-full"
             >
               {loading ? (
@@ -348,6 +427,19 @@ export default function CreateInvoice() {
                 'Add Milestones'
               )}
             </Button>
+
+            {txState !== 'idle' && (
+              <TransactionStatus
+                state={txState}
+                txId={txId}
+                error={txError}
+                title="Adding Milestones"
+                successMessage="All milestones added successfully!"
+                pendingMessage="Adding milestones to blockchain..."
+                onRetry={handleAddMilestones}
+                onClose={() => setTxState('idle')}
+              />
+            )}
           </div>
         )}
 
