@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play, Github, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function HeroSection() {
   return (
@@ -68,17 +69,23 @@ export function HeroSection() {
           transition={{ delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
         >
-          <Button size="lg" className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 h-14 px-10 text-lg">
-            🚀 Try Live Demo
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          <Link to="/app">
+            <Button size="lg" className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 h-14 px-10 text-lg">
+              🚀 Try Live Demo
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
+          <Button size="lg" variant="outline" className="group h-14 px-10 text-lg" asChild>
+            <a href="#demo">
+              <Play className="mr-2 w-5 h-5" />
+              Watch Demo Video
+            </a>
           </Button>
-          <Button size="lg" variant="outline" className="group h-14 px-10 text-lg">
-            <Play className="mr-2 w-5 h-5" />
-            Watch Demo Video
-          </Button>
-          <Button size="lg" variant="outline" className="group h-14 px-10 text-lg">
-            <Github className="mr-2 w-5 h-5" />
-            View on GitHub
+          <Button size="lg" variant="outline" className="group h-14 px-10 text-lg" asChild>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <Github className="mr-2 w-5 h-5" />
+              View on GitHub
+            </a>
           </Button>
         </motion.div>
 

@@ -44,7 +44,26 @@ const Index: React.FC = () => {
               ₿ Bitcoin-Native Settlement
             </Badge>
           </div>
-          {isConnected && (
+          
+          {/* Wallet Connection Prompt */}
+          {!isConnected ? (
+            <div className="mt-8 max-w-2xl mx-auto">
+              <Card className="bg-gradient-to-r from-orange-50 to-purple-50 border-2 border-orange-200">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <Wallet className="w-6 h-6 text-orange-600" />
+                    <h3 className="text-xl font-bold text-gray-900">Connect Your Wallet to Get Started</h3>
+                  </div>
+                  <p className="text-gray-700 mb-4">
+                    Connect your Stacks wallet to create invoices, access DeFi features, and manage your smart contracts.
+                  </p>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-2">Look for the "Connect Wallet" button in the navigation bar above ↑</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
             <div className="flex gap-3 justify-center mt-6">
               <Link to="/demo">
                 <Button className="bg-gradient-to-r from-orange-500 to-purple-600">

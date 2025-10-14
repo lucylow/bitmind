@@ -7,6 +7,7 @@ import { ArrowLeft, CheckCircle, Clock, AlertTriangle, DollarSign } from "lucide
 import WalletConnect from "@/components/WalletConnect";
 import MilestoneTracker from "@/components/MilestoneTracker";
 import DisputeResolution from "@/components/DisputeResolution";
+import { demoLoader } from "@/lib/demoLoader";
 
 const InvoiceDetails = () => {
   const { id } = useParams();
@@ -92,8 +93,29 @@ const InvoiceDetails = () => {
     },
   };
 
-  // Get invoice from database or use default
-  const invoice = invoiceDatabase[id || ""] || {
+  // Try to get from demo data first, then fall back to static database
+  const demoInvoice = id ? demoLoader.getInvoiceById(id) : null;
+  
+  const invoice = demoInvoice ? {
+    id: demoInvoice.invoice_id,
+    status: demoInvoice.status,
+    amount: `${(demoInvoice.amount / 100000000).toFixed(3)} ${demoInvoice.currency}`,
+    usdAmount: `≈ $${Math.round((demoInvoice.amount / 100000000) * 60000).toLocaleString()}`,
+    dao: demoInvoice.description.split('-')[0].trim(),
+    description: demoInvoice.description,
+    issuer: demoInvoice.payer,
+    client: demoInvoice.payee,
+    arbitrator: demoInvoice.arbiter || 'Not assigned',
+    totalAmount: Math.round((demoInvoice.amount / 100000000) * 60000),
+    releasedAmount: Math.round((demoInvoice.milestones.filter(m => m.status === 'completed').reduce((sum, m) => sum + m.amount, 0) / 100000000) * 60000),
+    createdAt: new Date(demoInvoice.created_at).toLocaleDateString(),
+    milestones: demoInvoice.milestones.map((m, idx) => ({
+      id: idx + 1,
+      description: m.title,
+      amount: Math.round((m.amount / 100000000) * 60000),
+      status: m.status === 'completed' ? 'released' : m.status === 'in_progress' ? 'approved' : 'pending'
+    })),
+  } : invoiceDatabase[id || ""] || {
     id: id || "INV-001",
     status: "in-progress",
     amount: "$12,500",

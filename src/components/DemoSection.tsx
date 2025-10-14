@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Play, ArrowRight, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const steps = [
   {
@@ -73,10 +74,12 @@ export function DemoSection() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="pt-6"
             >
-              <Button size="lg" className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
-                🎯 Launch Interactive Demo
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <Link to="/app">
+                <Button size="lg" className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
+                  🎯 Launch Interactive Demo
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </motion.div>
           </div>
 
@@ -128,12 +131,14 @@ export function DemoSection() {
 
               {/* Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <Button
-                  size="lg"
-                  className="rounded-full w-16 h-16 p-0 opacity-90 hover:opacity-100 transition-opacity bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                >
-                  <Play className="w-6 h-6 ml-1" />
-                </Button>
+                <Link to="/demo">
+                  <Button
+                    size="lg"
+                    className="rounded-full w-16 h-16 p-0 opacity-90 hover:opacity-100 transition-opacity bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                  >
+                    <Play className="w-6 h-6 ml-1" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>

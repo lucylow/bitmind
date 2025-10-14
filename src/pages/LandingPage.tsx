@@ -38,7 +38,7 @@ function Navigation() {
             <a href="#demo" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
               Demo
             </a>
-            <Link to="/dashboard" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
+            <Link to="/app" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
               Dashboard
             </Link>
             <Link to="/help" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
@@ -48,13 +48,17 @@ function Navigation() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              <Github className="mr-2 w-4 h-4" />
-              GitHub
+            <Button variant="outline" size="sm" asChild>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                <Github className="mr-2 w-4 h-4" />
+                GitHub
+              </a>
             </Button>
-            <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
-              Launch App
-            </Button>
+            <Link to="/app">
+              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
+                Launch App
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -92,7 +96,7 @@ function Navigation() {
                 Demo
               </a>
               <Link 
-                to="/dashboard" 
+                to="/app" 
                 className="block text-gray-700 hover:text-gray-900 font-medium"
                 onClick={() => setIsOpen(false)}
               >
@@ -106,13 +110,17 @@ function Navigation() {
                 Help
               </Link>
               <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full">
-                  <Github className="mr-2 w-4 h-4" />
-                  GitHub
+                <Button variant="outline" className="w-full" asChild>
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                    <Github className="mr-2 w-4 h-4" />
+                    GitHub
+                  </a>
                 </Button>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
-                  Launch App
-                </Button>
+                <Link to="/app">
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
+                    Launch App
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>

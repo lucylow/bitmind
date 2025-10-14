@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Github } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function CTASection() {
   return (
@@ -20,20 +21,25 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Button 
-              size="lg" 
-              className="group bg-white text-gray-900 hover:bg-gray-100 h-14 px-10 text-lg"
-            >
-              🚀 Launch DApp
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link to="/app">
+              <Button 
+                size="lg" 
+                className="group bg-white text-gray-900 hover:bg-gray-100 h-14 px-10 text-lg"
+              >
+                🚀 Launch DApp
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
             <Button 
               size="lg" 
               variant="outline" 
               className="border-white text-white hover:bg-white/10 h-14 px-10 text-lg"
+              asChild
             >
-              <Github className="mr-2 w-5 h-5" />
-              Star on GitHub
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                <Github className="mr-2 w-5 h-5" />
+                Star on GitHub
+              </a>
             </Button>
           </div>
 

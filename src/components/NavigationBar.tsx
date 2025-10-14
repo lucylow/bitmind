@@ -43,13 +43,13 @@ const NavigationBar = () => {
   const { isConnected } = useWalletStore();
   
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
-  const isLandingPage = location.pathname === '/landing';
+  const isLandingPage = location.pathname === '/';
   
   // Navigation sections for better organization
   const mainNavItems: NavItem[] = [
     { 
       label: 'Home', 
-      path: '/', 
+      path: '/app', 
       icon: <Home className="w-4 h-4" />,
       description: 'Main dashboard'
     },
@@ -141,7 +141,7 @@ const NavigationBar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/app" className="flex items-center space-x-3 group">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-purple-600 rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-transform">
               <Brain className="w-6 h-6 text-white" />
             </div>

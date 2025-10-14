@@ -32,6 +32,14 @@ const QuickNav = () => {
       badge: 'Popular'
     },
     {
+      title: 'Interactive Demo',
+      description: 'Full demo playground with simulations and production data',
+      icon: <Sparkles className="w-8 h-8" />,
+      path: '/interactive-demo',
+      color: 'from-pink-500 to-rose-600',
+      badge: 'Featured'
+    },
+    {
       title: 'Create Invoice',
       description: 'Generate a new smart contract invoice with milestone tracking',
       icon: <PlusCircle className="w-8 h-8" />,
