@@ -155,3 +155,4 @@ if (location.pathname === '/') {
 - Create onboarding tutorial for first-time users
 - Add email capture before wallet connection
 
+

@@ -102,3 +102,4 @@ export type InvoiceStatus = 'draft' | 'active' | 'funded' | 'disputed' | 'comple
 export type MilestoneStatus = 'pending' | 'in_progress' | 'completed' | 'disputed' | 'blocked';
 export type DisputeStatus = 'under_review' | 'resolved' | 'escalated' | 'cancelled';
 
+

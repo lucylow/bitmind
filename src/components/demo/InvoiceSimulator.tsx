@@ -318,3 +318,4 @@ export const InvoiceSimulator: React.FC<InvoiceSimulatorProps> = ({ onInvoiceSel
 	);
 };
 
+
