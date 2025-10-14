@@ -12,8 +12,7 @@
     "backend:build": "cd backend && npm run build",
     "build:unified": "npm run build:frontend && npm run backend:install && npm run backend:build && npm run copy:backend",
     "copy:backend": "node scripts/copy-backend.js",
-    "verify": "node verify-build.js",
-    "postinstall": "npm run backend:install || true"
+    "verify": "node verify-build.js"
   },
   "keywords": [
     "blockchain",
