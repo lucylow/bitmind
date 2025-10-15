@@ -35,11 +35,19 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+<<<<<<< HEAD
           {/* Landing Page - Entry point for all users */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
           
           {/* Protected Main App - Access after wallet connection */}
+=======
+          {/* Landing Page - First page users see */}
+          <Route path="/landing" element={<LandingPage />} />
+          
+          {/* Main App - Protected Dashboard */}
+          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+>>>>>>> b78d7f565d084dc1b19d0e060cf3575ac0b3a8e2
           <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/invoices" element={<ProtectedRoute><InvoiceManager /></ProtectedRoute>} />
