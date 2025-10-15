@@ -34,7 +34,8 @@
     "dist",
     "backend",
     "**/*.spec.ts",
-    "**/*.test.ts"
+    "**/*.test.ts",
+    "**/*.js"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
