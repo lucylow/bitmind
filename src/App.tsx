@@ -35,14 +35,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Public Routes - No Wallet Required */}
-          <Route path="/landing" element={<LandingPage />} />
+          {/* Landing Page - First page users see */}
+          <Route path="/" element={<LandingPage />} />
           
-          {/* Main App - Shows home page with conditional content based on wallet */}
-          <Route path="/" element={<Index />} />
+          {/* Main App - Home page with conditional content based on wallet */}
+          <Route path="/home" element={<Index />} />
           
           {/* Protected Routes - Require Wallet Connection */}
           <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/invoices" element={<ProtectedRoute><InvoiceManager /></ProtectedRoute>} />
           <Route path="/create" element={<ProtectedRoute><CreateInvoice /></ProtectedRoute>} />
