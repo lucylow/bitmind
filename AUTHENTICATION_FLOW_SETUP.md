@@ -156,3 +156,4 @@ if (location.pathname === '/') {
 - Add email capture before wallet connection
 
 
+

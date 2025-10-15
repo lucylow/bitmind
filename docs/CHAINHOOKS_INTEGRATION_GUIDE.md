@@ -576,3 +576,4 @@ app.post('/webhooks/chainhook/invoice-created', async (req, res) => {
 🚀 **With Chainhooks, your BitMind invoices are now truly real-time!**
 
 
+

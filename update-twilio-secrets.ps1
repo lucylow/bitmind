@@ -85,3 +85,4 @@ Write-Host "  npx supabase functions deploy function-name" -ForegroundColor Cyan
 Write-Host ""
 
 
+
