@@ -1,7 +1,13 @@
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import NavigationBar from '@/components/NavigationBar';
 
 const Analytics = () => {
-  return <AnalyticsDashboard />;
+  return (
+    <div className="min-h-screen bg-background">
+      <NavigationBar />
+      <AnalyticsDashboard />
+    </div>
+  );
 };
 
 export default Analytics;

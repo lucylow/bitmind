@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, CheckCircle2, ArrowRight, AlertCircle, FileText, Brain } from "lucide-react";
+import { Sparkles, CheckCircle2, ArrowRight, AlertCircle, FileText, Brain, Bitcoin, Calculator, Loader2 } from "lucide-react";
 import { AIParsedInvoice } from '../types';
 import { invoiceService } from '../services/invoiceService';
 import { useNavigate } from 'react-router-dom';
+import NavigationBar from "@/components/NavigationBar";
+import { convertUSDtoSatoshis, formatCurrency } from '@/services/publicApis';
 
 const CreateInvoice = () => {
   const navigate = useNavigate();
@@ -17,6 +19,11 @@ const CreateInvoice = () => {
   const [aiPreview, setAiPreview] = useState<AIParsedInvoice | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [deploymentResult, setDeploymentResult] = useState<any>(null);
+  // USD to Sats converter state
+  const [showConverter, setShowConverter] = useState(false);
+  const [usdAmount, setUsdAmount] = useState('100');
+  const [satsAmount, setSatsAmount] = useState<number | null>(null);
+  const [convertLoading, setConvertLoading] = useState(false);
 
   const steps = [
     { id: 0, name: 'Describe', description: 'Tell us about your project' },
@@ -72,9 +79,24 @@ const CreateInvoice = () => {
     }
   };
 
+  const handleConvertUSD = async () => {
+    if (!usdAmount || parseFloat(usdAmount) <= 0) return;
+    setConvertLoading(true);
+    try {
+      const sats = await convertUSDtoSatoshis(parseFloat(usdAmount));
+      setSatsAmount(sats);
+    } catch (error) {
+      console.error('Conversion error:', error);
+      alert('Failed to convert USD to satoshis');
+    } finally {
+      setConvertLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <NavigationBar />
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-block mb-4">
@@ -218,6 +240,61 @@ Total budget: 5,000 sBTC. Timeline: 6 weeks."
                       An independent third party to resolve disputes
                     </p>
                   </div>
+
+                  {/* USD to Satoshis Converter */}
+                  <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200">
+                    <CardHeader className="pb-3">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowConverter(!showConverter)}
+                        className="w-full justify-between p-0 hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Calculator className="w-5 h-5 text-orange-600" />
+                          <span className="font-semibold text-gray-900">USD to Satoshis Converter</span>
+                        </div>
+                        <ArrowRight className={`w-4 h-4 transition-transform ${showConverter ? 'rotate-90' : ''}`} />
+                      </Button>
+                    </CardHeader>
+                    {showConverter && (
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="flex gap-2">
+                            <input
+                              type="number"
+                              value={usdAmount}
+                              onChange={(e) => setUsdAmount(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleConvertUSD()}
+                              className="flex-1 px-4 py-2 border-2 border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                              placeholder="Enter USD amount"
+                            />
+                            <Button 
+                              onClick={handleConvertUSD} 
+                              disabled={convertLoading}
+                              className="bg-gradient-to-r from-orange-600 to-amber-600"
+                            >
+                              {convertLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Convert'}
+                            </Button>
+                          </div>
+                          {satsAmount !== null && (
+                            <div className="bg-white p-4 rounded-lg border-2 border-orange-200">
+                              <p className="text-sm text-gray-600 mb-1">
+                                ${usdAmount} USD =
+                              </p>
+                              <p className="text-2xl font-bold text-orange-600 flex items-center gap-2">
+                                <Bitcoin className="w-6 h-6" />
+                                {satsAmount.toLocaleString()} sats
+                              </p>
+                              <p className="text-xs text-gray-500 mt-2">
+                                Use this for accurate BTC amounts in your invoice
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    )}
+                  </Card>
 
                   {/* AI Preview */}
                   {aiPreview && (

@@ -1,6 +1,7 @@
 /**
  * Smart Invoice Demo Component
  * Step-by-step workflow for AI-powered invoice creation and escrow
+ * Enhanced for DAO deals with comprehensive mock data
  */
 
 import React, { useState } from 'react';
@@ -19,7 +20,11 @@ import {
   Wallet,
   ArrowRight,
   Check,
+  Database,
+  Shuffle,
+  Info,
 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { 
   parseInvoiceWithOpenAI, 
@@ -27,6 +32,17 @@ import {
   validateInvoiceData,
   InvoiceData 
 } from '@/lib/aiInvoiceParser';
+import { 
+  parseInvoiceWithSupabase, 
+  isSupabaseConfigured, 
+  getSupabaseStatus 
+} from '@/lib/supabaseInvoiceParser';
+import { 
+  DAO_INVOICE_TEMPLATES, 
+  getRandomDAOInvoice, 
+  getDAOInvoiceById,
+  type DAOInvoiceTemplate 
+} from '@/data/daoInvoiceMockData';
 import {
   connectWallet,
   createInvoice,
@@ -56,22 +72,57 @@ export default function SmartInvoiceDemo() {
   const [error, setError] = useState<string | null>(null);
   
   // Invoice data
-  const [invoiceText, setInvoiceText] = useState(
-    `Invoice #2024-001
-To: SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7 (Alice)
-From: WebGuild DAO
-Description: UX redesign and deliverables: wireframes + responsive pages
-Amount: 0.05 sBTC due on 2025-12-31
-Milestones: Initial mockups (50%) | Final delivery (50%)
-Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
-  );
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('defi-audit');
+  const [currentTemplate, setCurrentTemplate] = useState<DAOInvoiceTemplate>(DAO_INVOICE_TEMPLATES[0]);
+  const [invoiceText, setInvoiceText] = useState(DAO_INVOICE_TEMPLATES[0].invoiceText);
   const [parsedData, setParsedData] = useState<InvoiceData | null>(null);
   const [apiKey, setApiKey] = useState('');
-  const [aiProvider, setAiProvider] = useState<'openai' | 'claude'>('openai');
+  const [aiProvider, setAiProvider] = useState<'openai' | 'claude' | 'supabase'>('supabase');
+  const [useMockData, setUseMockData] = useState(false);
   
   // Transaction data
   const [txHash, setTxHash] = useState<string | null>(null);
   const [invoiceStatus, setInvoiceStatus] = useState<string>('');
+  
+  // Supabase status
+  const supabaseStatus = getSupabaseStatus();
+
+  /**
+   * Load a different DAO template
+   */
+  const handleLoadTemplate = (templateId: string) => {
+    const template = getDAOInvoiceById(templateId);
+    if (template) {
+      setSelectedTemplate(templateId);
+      setCurrentTemplate(template);
+      setInvoiceText(template.invoiceText);
+      setParsedData(null);
+      setUseMockData(false);
+      setError(null);
+    }
+  };
+
+  /**
+   * Load random DAO invoice template
+   */
+  const handleLoadRandomTemplate = () => {
+    const template = getRandomDAOInvoice();
+    setSelectedTemplate(template.id);
+    setCurrentTemplate(template);
+    setInvoiceText(template.invoiceText);
+    setParsedData(null);
+    setUseMockData(false);
+    setError(null);
+  };
+
+  /**
+   * Use mock data for demo (no API key required)
+   */
+  const handleUseMockData = () => {
+    setParsedData(currentTemplate.parsedData);
+    setUseMockData(true);
+    setCurrentStep('review');
+  };
 
   /**
    * Step 1: Parse invoice with AI
@@ -83,9 +134,27 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
     try {
       let parsed: InvoiceData;
       
-      if (aiProvider === 'openai') {
+      if (aiProvider === 'supabase') {
+        // Use Supabase Edge Function with OpenAI (no API key needed from frontend)
+        if (!supabaseStatus.configured) {
+          setError('Supabase is not configured. Please use mock data or configure Supabase.');
+          setLoading(false);
+          return;
+        }
+        parsed = await parseInvoiceWithSupabase(invoiceText);
+      } else if (aiProvider === 'openai') {
+        if (!apiKey) {
+          setError('OpenAI API key is required');
+          setLoading(false);
+          return;
+        }
         parsed = await parseInvoiceWithOpenAI(invoiceText, apiKey);
       } else {
+        if (!apiKey) {
+          setError('Anthropic API key is required');
+          setLoading(false);
+          return;
+        }
         parsed = await parseInvoiceWithClaude(invoiceText, apiKey);
       }
 
@@ -96,6 +165,7 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
       }
 
       setParsedData(parsed);
+      setUseMockData(false);
       setCurrentStep('review');
     } catch (err: any) {
       setError(err.message || 'Failed to parse invoice');
@@ -121,15 +191,21 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
     setError(null);
 
     try {
-      await createInvoice(
-        parsedData.invoice_id,
-        parsedData.payee || '',
-        parsedData.amount,
-        parsedData.token_contract || '',
-        parsedData.arbiter || '',
-        99999999, // Deadline in block height
-        null // User session
-      );
+      if (useMockData) {
+        // Simulate transaction delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setInvoiceStatus('CREATED');
+      } else {
+        await createInvoice(
+          parsedData.invoice_id,
+          parsedData.payee || '',
+          parsedData.amount,
+          parsedData.token_contract || '',
+          parsedData.arbiter || '',
+          99999999, // Deadline in block height
+          null // User session
+        );
+      }
 
       setCurrentStep('deposit');
     } catch (err: any) {
@@ -149,11 +225,17 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
     setError(null);
 
     try {
-      await transferTokensToEscrow(
-        parsedData.amount,
-        parsedData.payer || '',
-        null
-      );
+      if (useMockData) {
+        // Simulate transaction delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setInvoiceStatus('DEPOSITED');
+      } else {
+        await transferTokensToEscrow(
+          parsedData.amount,
+          parsedData.payer || '',
+          null
+        );
+      }
 
       setCurrentStep('acknowledge');
     } catch (err: any) {
@@ -173,8 +255,15 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
     setError(null);
 
     try {
-      await acknowledgeDeposit(parsedData.invoice_id, null);
-      setInvoiceStatus('FUNDED');
+      if (useMockData) {
+        // Simulate transaction delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setInvoiceStatus('FUNDED');
+      } else {
+        await acknowledgeDeposit(parsedData.invoice_id, null);
+        setInvoiceStatus('FUNDED');
+      }
+      
       setCurrentStep('release');
     } catch (err: any) {
       setError(err.message || 'Failed to acknowledge deposit');
@@ -193,8 +282,15 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
     setError(null);
 
     try {
-      await releaseFunds(parsedData.invoice_id, null);
-      setInvoiceStatus('RELEASED');
+      if (useMockData) {
+        // Simulate transaction delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setInvoiceStatus('RELEASED');
+      } else {
+        await releaseFunds(parsedData.invoice_id, null);
+        setInvoiceStatus('RELEASED');
+      }
+      
       setCurrentStep('complete');
     } catch (err: any) {
       setError(err.message || 'Failed to release funds');
@@ -255,7 +351,23 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
         <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">
           Smart Invoice Deals for DAOs
         </h1>
-        <p className="text-gray-600">AI-powered Bitcoin-native invoicing on Stacks</p>
+        <p className="text-gray-600 mb-3">AI-powered Bitcoin-native invoicing on Stacks</p>
+        
+        <div className="flex gap-2 justify-center items-center flex-wrap">
+          {useMockData && (
+            <Badge className="bg-gradient-to-r from-green-500 to-blue-500">
+              🎮 Interactive Demo Mode - Using Mock Data
+            </Badge>
+          )}
+          {supabaseStatus.configured && !useMockData && (
+            <Badge className="bg-green-600">
+              ✅ Supabase + OpenAI Ready
+            </Badge>
+          )}
+          <Badge variant="outline">
+            {DAO_INVOICE_TEMPLATES.length} DAO Templates Available
+          </Badge>
+        </div>
       </div>
 
       {renderStepIndicator()}
@@ -272,16 +384,89 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5" />
-              AI Invoice Parser
+              AI Invoice Parser for DAO Deals
             </CardTitle>
             <CardDescription>
-              Paste your invoice text below and let AI extract the structured data
+              Select a DAO invoice template or paste your own invoice text
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Template Selection */}
+            <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200">
+              <CardContent className="pt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <FileText className="w-4 h-4 text-purple-600" />
+                  <label className="text-sm font-semibold">DAO Invoice Templates</label>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Select value={selectedTemplate} onValueChange={handleLoadTemplate}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Select a template" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DAO_INVOICE_TEMPLATES.map((template) => (
+                          <SelectItem key={template.id} value={template.id}>
+                            {template.daoName} - {template.scenario}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleLoadRandomTemplate}
+                      title="Load random template"
+                    >
+                      <Shuffle className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  {/* Current Template Info */}
+                  <div className="bg-white p-3 rounded-lg border">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <p className="font-semibold text-sm">{currentTemplate.daoName}</p>
+                        <p className="text-xs text-muted-foreground">{currentTemplate.scenario}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge variant="outline" className="text-xs">
+                          {currentTemplate.daoType}
+                        </Badge>
+                        <Badge 
+                          variant="secondary" 
+                          className={`text-xs ${
+                            currentTemplate.complexity === 'simple' ? 'bg-green-100' :
+                            currentTemplate.complexity === 'medium' ? 'bg-yellow-100' :
+                            'bg-orange-100'
+                          }`}
+                        >
+                          {currentTemplate.complexity}
+                        </Badge>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Amount: {(currentTemplate.parsedData.amount / 100000000).toFixed(2)} sBTC
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* AI Provider Selection */}
             <div>
               <label className="text-sm font-medium mb-2 block">Select AI Provider</label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant={aiProvider === 'supabase' ? 'default' : 'outline'}
+                  onClick={() => setAiProvider('supabase')}
+                  className={aiProvider === 'supabase' ? 'bg-green-600' : ''}
+                >
+                  <Database className="w-4 h-4 mr-2" />
+                  Supabase + OpenAI
+                  {supabaseStatus.configured && <Badge className="ml-2 bg-white text-green-600 text-xs">✓</Badge>}
+                </Button>
                 <Button
                   variant={aiProvider === 'openai' ? 'default' : 'outline'}
                   onClick={() => setAiProvider('openai')}
@@ -295,22 +480,38 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
                   Anthropic Claude
                 </Button>
               </div>
+              {aiProvider === 'supabase' && (
+                <Alert className="mt-2">
+                  <Info className="w-4 h-4" />
+                  <AlertDescription className="text-xs">
+                    {supabaseStatus.configured ? (
+                      <>✅ Supabase configured! Uses OpenAI API key stored securely in Supabase environment.</>
+                    ) : (
+                      <>⚠️ Supabase not configured. Please use mock data or add Supabase credentials to .env.local</>
+                    )}
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-2 block">API Key</label>
-              <Input
-                type="password"
-                placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key`}
-                value={apiKey}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
-              />
-            </div>
+            {/* API Key (only show for direct OpenAI/Claude) */}
+            {(aiProvider === 'openai' || aiProvider === 'claude') && (
+              <div>
+                <label className="text-sm font-medium mb-2 block">API Key</label>
+                <Input
+                  type="password"
+                  placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key`}
+                  value={apiKey}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
+                />
+              </div>
+            )}
 
+            {/* Invoice Text */}
             <div>
               <label className="text-sm font-medium mb-2 block">Invoice Text</label>
               <Textarea
-                rows={10}
+                rows={12}
                 placeholder="Paste your invoice text here..."
                 value={invoiceText}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInvoiceText(e.target.value)}
@@ -318,23 +519,73 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
               />
             </div>
 
-            <Button 
-              onClick={handleParseInvoice} 
-              disabled={loading || !apiKey}
-              className="w-full"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Parsing with AI...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Parse Invoice with AI
-                </>
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              {aiProvider === 'supabase' && supabaseStatus.configured && (
+                <Button 
+                  onClick={handleParseInvoice} 
+                  disabled={loading}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Parsing with Supabase + OpenAI...
+                    </>
+                  ) : (
+                    <>
+                      <Database className="w-4 h-4 mr-2" />
+                      Parse Invoice with Supabase (OpenAI)
+                    </>
+                  )}
+                </Button>
               )}
-            </Button>
+
+              {(aiProvider === 'openai' || aiProvider === 'claude') && (
+                <Button 
+                  onClick={handleParseInvoice} 
+                  disabled={loading || !apiKey}
+                  className="w-full"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Parsing with AI...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Parse Invoice with {aiProvider === 'openai' ? 'OpenAI' : 'Claude'}
+                    </>
+                  )}
+                </Button>
+              )}
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or try without any API
+                  </span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleUseMockData} 
+                disabled={loading}
+                variant="outline"
+                className="w-full bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-300 hover:border-green-400"
+              >
+                <Sparkles className="w-4 h-4 mr-2 text-green-600" />
+                Use Mock Data Demo (No API Key Needed)
+              </Button>
+
+              <p className="text-xs text-center text-muted-foreground">
+                🎮 Mock data mode: Explore the full DAO invoice workflow without API keys or wallet connection
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -491,6 +742,7 @@ Arbiter: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE`
                 setParsedData(null);
                 setError(null);
                 setInvoiceStatus('');
+                setUseMockData(false);
               }}
               className="w-full"
             >

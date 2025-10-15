@@ -13,6 +13,7 @@ import {
   Code,
   ExternalLink
 } from "lucide-react";
+import NavigationBar from "@/components/NavigationBar";
 
 const Help = () => {
   const features = [
@@ -91,6 +92,7 @@ const Help = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <NavigationBar />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -211,7 +213,11 @@ const Help = () => {
                 <CardDescription>Explore our open-source Clarity contracts</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => window.open('https://github.com', '_blank')}
+                >
                   View on GitHub
                   <ExternalLink className="ml-2 w-4 h-4" />
                 </Button>
@@ -225,7 +231,11 @@ const Help = () => {
                 <CardDescription>Integrate BitMind into your app</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => alert('API Documentation\n\nView comprehensive API docs and integration guides in the README.md and docs/ folder of this repository.')}
+                >
                   Read Docs
                   <ExternalLink className="ml-2 w-4 h-4" />
                 </Button>
@@ -239,7 +249,11 @@ const Help = () => {
                 <CardDescription>Join our Discord for support</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => alert('Community Support\n\nJoin our Discord community for help, discussions, and updates!\n\n(Discord integration available in production)')}
+                >
                   Join Discord
                   <ExternalLink className="ml-2 w-4 h-4" />
                 </Button>
@@ -257,11 +271,21 @@ const Help = () => {
               Our support team is here to help. Get in touch and we'll respond within 24 hours.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary" className="font-semibold">
+              <Button 
+                size="lg" 
+                variant="secondary" 
+                className="font-semibold"
+                onClick={() => alert('Contact Support\n\nEmail: support@bitmind.example\n\nOur support team typically responds within 24 hours.\n\n(This is a demo - support features available in production)')}
+              >
                 Contact Support
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-              <Button size="lg" variant="outline" className="font-semibold bg-transparent text-white border-white hover:bg-white hover:text-blue-600">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="font-semibold bg-transparent text-white border-white hover:bg-white hover:text-blue-600"
+                onClick={() => alert('Schedule Demo\n\nThank you for your interest!\n\nTo schedule a personalized demo:\n1. Visit our website\n2. Fill out the demo request form\n3. Our team will contact you within 24 hours\n\n(Demo scheduling available in production)')}
+              >
                 Schedule Demo
               </Button>
             </div>

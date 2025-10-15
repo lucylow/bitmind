@@ -11,7 +11,6 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import InvoiceManager from "./pages/InvoiceManager";
 import Help from "./pages/Help";
-import ApiDemo from "./pages/ApiDemo";
 import Demo from "./pages/Demo";
 import SupabaseTest from "./pages/SupabaseTest";
 // Advanced DeFi Feature Pages
@@ -38,21 +37,24 @@ const App = () => (
           {/* Landing Page - First page users see */}
           <Route path="/landing" element={<LandingPage />} />
           
-          {/* Main App - Protected Dashboard */}
-          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          {/* Main Landing - Public with Demo Mode */}
+          <Route path="/" element={<Index />} />
+          
+          {/* Demo Pages - Public for easy access without wallet */}
+          <Route path="/demo" element={<Demo />} />
+          <Route path="/interactive-demo" element={<InteractiveDemo />} />
+          
+          {/* Protected Dashboard and Features */}
           <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/invoices" element={<ProtectedRoute><InvoiceManager /></ProtectedRoute>} />
           <Route path="/create" element={<ProtectedRoute><CreateInvoice /></ProtectedRoute>} />
-          <Route path="/demo" element={<ProtectedRoute><Demo /></ProtectedRoute>} />
           <Route path="/invoice/:id" element={<ProtectedRoute><InvoiceDetails /></ProtectedRoute>} />
-          <Route path="/interactive-demo" element={<ProtectedRoute><InteractiveDemo /></ProtectedRoute>} />
           
           {/* Public Info Routes */}
           <Route path="/help" element={<Help />} />
           
-          {/* API Demo Routes - Public for demonstration */}
-          <Route path="/api-demo" element={<ApiDemo />} />
+          {/* API Showcase - Public for demonstration */}
           <Route path="/api-showcase" element={<APIShowcase />} />
           <Route path="/supabase-test" element={<SupabaseTest />} />
           <Route path="/realtime-monitor" element={<RealtimeMonitor />} />

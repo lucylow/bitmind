@@ -49,47 +49,73 @@ const Index: React.FC = () => {
             </Badge>
           </div>
           
-          {/* Wallet Connection Prompt */}
-          {!isConnected ? (
-            <div className="mt-8 max-w-2xl mx-auto">
-              <Card className="bg-gradient-to-r from-orange-50 to-purple-50 border-2 border-orange-200">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <Wallet className="w-6 h-6 text-orange-600" />
-                    <h3 className="text-xl font-bold text-gray-900">Connect Your Wallet to Get Started</h3>
+          {/* Action Buttons - Available to All Users */}
+          <div className="flex gap-3 justify-center mt-6 flex-wrap">
+            <Link to="/demo">
+              <Button size="lg" className="bg-gradient-to-r from-orange-500 to-purple-600 text-white hover:shadow-lg transition-all">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Try DAO Invoice Demo
+              </Button>
+            </Link>
+            <Link to="/create">
+              <Button variant="outline" size="lg">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Invoice
+              </Button>
+            </Link>
+          </div>
+          
+          {/* Demo Feature Highlight */}
+          <Card className="mt-6 max-w-3xl mx-auto bg-gradient-to-r from-purple-50 via-blue-50 to-green-50 border-2 border-purple-300">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                    <Target className="w-6 h-6 text-white" />
                   </div>
-                  <p className="text-gray-700 mb-4">
-                    Connect your Stacks wallet to create invoices, access DeFi features, and manage your smart contracts.
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg mb-2">🎮 Interactive DAO Invoice Demo</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Explore smart invoice workflows with <strong>6 pre-built DAO templates</strong> covering DeFi audits, 
+                    NFT marketplaces, education guilds, gaming tokenomics, and more. Try the full workflow with:
                   </p>
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-2">Look for the "Connect Wallet" button in the navigation bar above ↑</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+                    <div className="bg-white p-2 rounded border">
+                      ✅ <strong>Mock Data</strong> - No API key needed
+                    </div>
+                    <div className="bg-white p-2 rounded border">
+                      🤖 <strong>Supabase + OpenAI</strong> - Uses your configured API
+                    </div>
+                    <div className="bg-white p-2 rounded border">
+                      ⚡ <strong>Full Escrow Flow</strong> - Create to release
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Wallet Connection Info for Non-Connected Users */}
+          {!isConnected && (
+            <div className="mt-6 max-w-2xl mx-auto">
+              <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <Wallet className="w-5 h-5 text-blue-600" />
+                    <p className="text-sm text-gray-700">
+                      <strong>Demo Mode Active:</strong> Explore features with mock data. Connect your wallet to create real invoices and interact with smart contracts.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
             </div>
-          ) : (
-            <div className="flex gap-3 justify-center mt-6">
-              <Link to="/demo">
-                <Button className="bg-gradient-to-r from-orange-500 to-purple-600">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Try AI Demo
-                </Button>
-              </Link>
-              <Link to="/create">
-                <Button variant="outline">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Invoice
-                </Button>
-              </Link>
-            </div>
           )}
         
         {/* Demo Mode for Hackathon Judges - Show for all users */}
-        {isConnected && (
-          <div className="mt-8">
-            <DemoModeButton variant="card" />
-          </div>
-        )}
+        <div className="mt-8">
+          <DemoModeButton variant="card" />
+        </div>
         </section>
 
         {/* DeFi Features Highlight - NEW! */}
@@ -316,11 +342,6 @@ const Index: React.FC = () => {
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Refresh
                 </Button>
-                <Link to="/api-demo">
-                  <Button variant="outline" size="sm">
-                    View API Demo
-                  </Button>
-                </Link>
                 <Link to="/supabase-test">
                   <Button variant="outline" size="sm">
                     Test Supabase

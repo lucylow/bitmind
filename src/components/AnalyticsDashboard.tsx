@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Brain, TrendingUp, AlertTriangle, DollarSign, BarChart3, PieChart } from 'lucide-react';
+import { Brain, TrendingUp, AlertTriangle, DollarSign, BarChart3, PieChart, Bitcoin, Loader2 } from 'lucide-react';
+import { fetchCryptoPrices, formatCurrency } from '@/services/publicApis';
 
 interface InvoiceData {
   id: number;
@@ -37,10 +38,26 @@ const AnalyticsDashboard: React.FC = () => {
   });
   const [delayTrends, setDelayTrends] = useState<DelayTrend[]>([]);
   const [loading, setLoading] = useState(true);
+  const [btcPrice, setBtcPrice] = useState<number | null>(null);
+  const [stxPrice, setStxPrice] = useState<number | null>(null);
+  const [pricesLoading, setPricesLoading] = useState(true);
 
   useEffect(() => {
     loadAnalyticsData();
+    loadCryptoPrices();
   }, []);
+
+  const loadCryptoPrices = async () => {
+    try {
+      const prices = await fetchCryptoPrices(['bitcoin', 'blockstack'], ['usd']);
+      setBtcPrice(prices.bitcoin.usd);
+      setStxPrice(prices.blockstack.usd);
+    } catch (error) {
+      console.error('Failed to fetch crypto prices:', error);
+    } finally {
+      setPricesLoading(false);
+    }
+  };
 
   const loadAnalyticsData = async () => {
     setLoading(true);
@@ -209,6 +226,58 @@ const AnalyticsDashboard: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Live Market Prices */}
+      <Card className="mb-8 bg-gradient-to-br from-slate-50 to-gray-100 border-2 border-gray-200">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Bitcoin className="w-6 h-6 text-orange-600" />
+              <CardTitle>Live Market Prices</CardTitle>
+            </div>
+            {pricesLoading && <Loader2 className="w-5 h-5 animate-spin text-orange-600" />}
+          </div>
+          <CardDescription>Real-time cryptocurrency rates for invoice pricing</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-4">
+            {btcPrice && (
+              <div className="flex items-center justify-between p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border-2 border-orange-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center">
+                    <Bitcoin className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-orange-900">Bitcoin (BTC)</h4>
+                    <p className="text-xs text-orange-700">Live price</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-orange-600">{formatCurrency(btcPrice)}</p>
+                  <TrendingUp className="w-4 h-4 text-green-600 inline ml-2" />
+                </div>
+              </div>
+            )}
+            {stxPrice && (
+              <div className="flex items-center justify-between p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg border-2 border-purple-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                    <TrendingUp className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-purple-900">Stacks (STX)</h4>
+                    <p className="text-xs text-purple-700">Live price</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-purple-600">{formatCurrency(stxPrice)}</p>
+                  <TrendingUp className="w-4 h-4 text-green-600 inline ml-2" />
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* AI Insights */}
       <div className="mb-8">

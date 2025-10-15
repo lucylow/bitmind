@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, Plus, Filter, Search, Calendar, User, DollarSign, CheckCircle2, Clock, AlertCircle, Sparkles } from "lucide-react";
 import { InvoiceData } from '../types';
 import { invoiceService } from '../services/invoiceService';
+import NavigationBar from "@/components/NavigationBar";
 
 const InvoiceManager = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -81,6 +83,7 @@ const InvoiceManager = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <NavigationBar />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -91,10 +94,12 @@ const InvoiceManager = () => {
                 Create, track, and manage all your DAO invoices
               </p>
             </div>
-            <Button size="lg" className="shadow-lg">
-              <Sparkles className="mr-2 w-5 h-5" />
-              Create with AI
-            </Button>
+            <Link to="/create">
+              <Button size="lg" className="shadow-lg">
+                <Sparkles className="mr-2 w-5 h-5" />
+                Create with AI
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -280,18 +285,28 @@ const InvoiceManager = () => {
                       <p className="text-3xl font-bold text-gray-900">{invoice.totalAmount} {invoice.currency}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
+                      <Link to={`/invoice/${invoice.id}`}>
+                        <Button variant="outline" size="sm">
+                          View Details
+                        </Button>
+                      </Link>
                       {invoice.status === 'ACTIVE' && (
-                        <Button size="sm" className="bg-gradient-to-r from-green-600 to-emerald-600">
+                        <Button 
+                          size="sm" 
+                          className="bg-gradient-to-r from-green-600 to-emerald-600"
+                          onClick={() => {
+                            alert(`Mock Action: Release Payment\n\nReleasing ${invoice.totalAmount} ${invoice.currency} for invoice ${invoice.id}\n\nIn production, this would:\n1. Verify milestone completion\n2. Transfer funds from escrow to contractor\n3. Update invoice status`);
+                          }}
+                        >
                           Release Payment
                         </Button>
                       )}
                       {invoice.status === 'DISPUTED' && (
-                        <Button size="sm" variant="destructive">
-                          View Dispute
-                        </Button>
+                        <Link to={`/invoice/${invoice.id}`}>
+                          <Button size="sm" variant="destructive">
+                            View Dispute
+                          </Button>
+                        </Link>
                       )}
                     </div>
                   </div>
@@ -309,10 +324,12 @@ const InvoiceManager = () => {
               <p className="text-gray-500 mb-6">
                 Try adjusting your filters or create a new invoice
               </p>
-              <Button>
-                <Plus className="mr-2 w-5 h-5" />
-                Create New Invoice
-              </Button>
+              <Link to="/create">
+                <Button>
+                  <Plus className="mr-2 w-5 h-5" />
+                  Create New Invoice
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         )}

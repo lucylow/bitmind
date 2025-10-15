@@ -43,7 +43,7 @@ const NavigationBar = () => {
   const { isConnected } = useWalletStore();
   
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
-  const isLandingPage = location.pathname === '/' || location.pathname === '/landing';
+  const isLandingPage = location.pathname === '/landing';
   
   // Navigation sections for better organization
   const mainNavItems: NavItem[] = [
@@ -80,12 +80,6 @@ const NavigationBar = () => {
       icon: <Sparkles className="w-4 h-4" />,
       badge: 'New',
       description: 'AI invoice parsing'
-    },
-    { 
-      label: 'API Demo', 
-      path: '/api-demo', 
-      icon: <Code className="w-4 h-4" />,
-      description: 'Live API integration'
     },
   ];
 

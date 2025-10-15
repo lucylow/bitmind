@@ -1,17 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, Clock, AlertTriangle, DollarSign } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock, AlertTriangle, DollarSign, Bitcoin, TrendingUp, Loader2 } from "lucide-react";
 import WalletConnect from "@/components/WalletConnect";
 import MilestoneTracker from "@/components/MilestoneTracker";
 import DisputeResolution from "@/components/DisputeResolution";
 import { demoLoader } from "@/lib/demoLoader";
+import NavigationBar from "@/components/NavigationBar";
+import { fetchCryptoPrices, formatCurrency } from "@/services/publicApis";
 
 const InvoiceDetails = () => {
   const { id } = useParams();
   const [showDispute, setShowDispute] = useState(false);
+  const [btcPrice, setBtcPrice] = useState<number | null>(null);
+  const [stxPrice, setStxPrice] = useState<number | null>(null);
+  const [pricesLoading, setPricesLoading] = useState(true);
+
+  // Fetch live crypto prices
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const prices = await fetchCryptoPrices(['bitcoin', 'blockstack'], ['usd']);
+        setBtcPrice(prices.bitcoin.usd);
+        setStxPrice(prices.blockstack.usd);
+      } catch (error) {
+        console.error('Failed to fetch crypto prices:', error);
+      } finally {
+        setPricesLoading(false);
+      }
+    };
+
+    fetchPrices();
+  }, []);
 
   // Mock invoice database (in real app, fetch from blockchain)
   const invoiceDatabase: Record<string, any> = {
@@ -156,18 +178,8 @@ const InvoiceDetails = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <NavigationBar />
       <div className="container mx-auto px-4 py-8">
-        <header className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <Link to="/">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
-              </Button>
-            </Link>
-            <WalletConnect />
-          </div>
-        </header>
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
@@ -270,12 +282,58 @@ const InvoiceDetails = () => {
               </CardContent>
             </Card>
 
+            {/* Live Crypto Prices */}
+            <Card className="bg-gradient-to-br from-slate-50 to-gray-100 border-2 border-gray-200">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Bitcoin className="w-5 h-5 text-orange-600" />
+                    <CardTitle className="text-lg">Live Market Prices</CardTitle>
+                  </div>
+                  {pricesLoading && <Loader2 className="w-4 h-4 animate-spin text-orange-600" />}
+                </div>
+                <CardDescription className="text-xs">Real-time rates</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {btcPrice && (
+                  <div className="p-3 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-200">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Bitcoin className="w-4 h-4 text-orange-600" />
+                      <span className="text-xs font-semibold text-orange-900">Bitcoin (BTC)</span>
+                    </div>
+                    <p className="text-xl font-bold text-orange-600">{formatCurrency(btcPrice)}</p>
+                  </div>
+                )}
+                {stxPrice && (
+                  <div className="p-3 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                    <div className="flex items-center gap-2 mb-1">
+                      <TrendingUp className="w-4 h-4 text-purple-600" />
+                      <span className="text-xs font-semibold text-purple-900">Stacks (STX)</span>
+                    </div>
+                    <p className="text-xl font-bold text-purple-600">{formatCurrency(stxPrice)}</p>
+                  </div>
+                )}
+                {!pricesLoading && (!btcPrice && !stxPrice) && (
+                  <p className="text-xs text-muted-foreground text-center py-2">
+                    Unable to fetch prices
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => {
+                    // Mock funding action
+                    alert(`Mock Action: Funding invoice ${invoice.id}\n\nIn production, this would:\n1. Connect your wallet\n2. Transfer ${invoice.amount} to escrow\n3. Update invoice status to "funded"`);
+                  }}
+                >
                   <DollarSign className="w-4 h-4 mr-2" />
                   Fund Invoice
                 </Button>

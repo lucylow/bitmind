@@ -3,9 +3,15 @@
  */
 
 import SmartInvoiceDemo from "@/components/SmartInvoiceDemo";
+import NavigationBar from "@/components/NavigationBar";
 
 const Demo = () => {
-  return <SmartInvoiceDemo />;
+  return (
+    <div className="min-h-screen bg-background">
+      <NavigationBar />
+      <SmartInvoiceDemo />
+    </div>
+  );
 };
 
 export default Demo;
