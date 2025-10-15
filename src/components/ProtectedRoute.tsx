@@ -55,10 +55,10 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
               <div className="flex justify-center">
                 <WalletConnect />
               </div>
-              <Link to="/" className="w-full">
+              <Link to="/landing" className="w-full">
                 <Button variant="outline" className="w-full">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Home
+                  Back to Landing Page
                 </Button>
               </Link>
             </div>

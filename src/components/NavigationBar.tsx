@@ -43,7 +43,7 @@ const NavigationBar = () => {
   const { isConnected } = useWalletStore();
   
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
-  const isLandingPage = location.pathname === '/';
+  const isLandingPage = location.pathname === '/' || location.pathname === '/landing';
   
   // Navigation sections for better organization
   const mainNavItems: NavItem[] = [
@@ -266,6 +266,15 @@ const NavigationBar = () => {
                 {item.label}
               </Link>
             ))}
+
+            {/* Back to Landing Link */}
+            <Link 
+              to="/landing" 
+              className="px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-gray-500 hover:bg-gray-50 hover:text-gray-700 border-l border-gray-200 ml-2"
+              title="Back to Landing Page"
+            >
+              <Home className="w-4 h-4" />
+            </Link>
           </div>
 
           {/* Wallet Connect & Mobile Menu */}
@@ -406,6 +415,21 @@ const NavigationBar = () => {
                   {item.label}
                 </Link>
               ))}
+
+              {/* Utility Links */}
+              <div className="pt-2 pb-1 px-3">
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Quick Links
+                </span>
+              </div>
+              <Link 
+                to="/landing" 
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Home className="w-4 h-4" />
+                Back to Landing Page
+              </Link>
 
               {/* Mobile Wallet Connect */}
               <div className="pt-4 px-3">
