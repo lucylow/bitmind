@@ -18,7 +18,7 @@ function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/landing" className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-blue-600 rounded-xl flex items-center justify-center">
               <Brain className="w-6 h-6 text-white" />
             </div>
@@ -38,7 +38,7 @@ function Navigation() {
             <a href="#demo" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
               Demo
             </a>
-            <Link to="/app" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
+            <Link to="/" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
               Dashboard
             </Link>
             <Link to="/help" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
@@ -54,7 +54,7 @@ function Navigation() {
                 GitHub
               </a>
             </Button>
-            <Link to="/app">
+            <Link to="/">
               <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
                 Launch App
               </Button>
@@ -96,7 +96,7 @@ function Navigation() {
                 Demo
               </a>
               <Link 
-                to="/app" 
+                to="/" 
                 className="block text-gray-700 hover:text-gray-900 font-medium"
                 onClick={() => setIsOpen(false)}
               >
@@ -116,7 +116,7 @@ function Navigation() {
                     GitHub
                   </a>
                 </Button>
-                <Link to="/app">
+                <Link to="/">
                   <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
                     Launch App
                   </Button>

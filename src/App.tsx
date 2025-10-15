@@ -36,14 +36,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Landing Page - First page users see */}
-          <Route path="/" element={<LandingPage />} />
-          
-          {/* Main App - Home page with conditional content based on wallet */}
-          <Route path="/home" element={<Index />} />
-          
-          {/* Protected Routes - Require Wallet Connection */}
-          <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/landing" element={<LandingPage />} />
+          
+          {/* Main App - Protected Dashboard */}
+          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/invoices" element={<ProtectedRoute><InvoiceManager /></ProtectedRoute>} />
           <Route path="/create" element={<ProtectedRoute><CreateInvoice /></ProtectedRoute>} />

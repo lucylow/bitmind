@@ -23,10 +23,9 @@ const WalletConnect = () => {
             console.log('✅ Found existing wallet session:', address);
             setConnected(address);
             
-            // Only redirect from the dedicated landing page, not from home
-            // Home page (/) handles both connected/disconnected states
+            // Redirect from landing page to main app after wallet connection
             if (location.pathname === '/landing') {
-              console.log('🔄 Redirecting from landing page to home');
+              console.log('🔄 Redirecting from landing page to app');
               navigate('/');
             }
           }
@@ -53,10 +52,9 @@ const WalletConnect = () => {
       console.log('✅ Wallet connected:', address);
       setConnected(address);
       
-      // Redirect from landing page to home after connection
-      // Home page shows connected state with action buttons
+      // Redirect from landing page to main app after connection
       if (location.pathname === '/landing') {
-        console.log('🔄 Redirecting to home after connection');
+        console.log('🔄 Redirecting to app after connection');
         navigate('/');
       }
       // If user connected from a protected route gate, they'll auto-see the content
