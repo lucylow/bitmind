@@ -25,6 +25,9 @@ import {
   Info,
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SBTCYieldDashboard, SBTCYieldBadge } from '@/components/SBTCYieldDashboard';
+import { BitcoinConfirmationWidget } from '@/components/BitcoinConfirmationWidget';
+import { GuidedTour } from '@/components/GuidedTour';
 
 import { 
   parseInvoiceWithOpenAI, 
@@ -347,6 +350,9 @@ export default function SmartInvoiceDemo() {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-5xl">
+      {/* Guided Tour */}
+      <GuidedTour />
+      
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">
           Smart Invoice Deals for DAOs
@@ -367,6 +373,7 @@ export default function SmartInvoiceDemo() {
           <Badge variant="outline">
             {DAO_INVOICE_TEMPLATES.length} DAO Templates Available
           </Badge>
+          {parsedData && <SBTCYieldBadge invoiceAmount={parsedData.amount} />}
         </div>
       </div>
 
@@ -592,6 +599,7 @@ export default function SmartInvoiceDemo() {
 
       {/* Step 2: Review Parsed Data */}
       {currentStep === 'review' && parsedData && (
+        <>
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -641,6 +649,17 @@ export default function SmartInvoiceDemo() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Show Bitcoin-aligned features */}
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SBTCYieldDashboard invoiceAmount={parsedData.amount} showDetails={true} />
+          <BitcoinConfirmationWidget 
+            stacksBlockHeight={12345} 
+            variant="card" 
+            showDetails={true}
+          />
+        </div>
+        </>
       )}
 
       {/* Steps 3-6: Transaction Steps */}

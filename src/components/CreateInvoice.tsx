@@ -79,25 +79,22 @@ export default function CreateInvoice() {
   // Step 1: Create invoice
   const handleCreateInvoice = async () => {
     // Validate contractor address
-    const contractorValidation = validateWalletAddress(contractorAddress, network === 'mainnet' ? 'mainnet' : 'testnet');
-    if (!contractorValidation.isValid) {
-      toast.error(formatValidationError('Contractor address', contractorValidation));
+    if (!validateWalletAddress(contractorAddress)) {
+      toast.error(formatValidationError('Contractor address', 'Invalid Stacks address format'));
       return;
     }
 
     // Validate arbitrator address if provided
     if (arbitratorAddress && arbitratorAddress.trim()) {
-      const arbitratorValidation = validateWalletAddress(arbitratorAddress, network === 'mainnet' ? 'mainnet' : 'testnet');
-      if (!arbitratorValidation.isValid) {
-        toast.error(formatValidationError('Arbitrator address', arbitratorValidation));
+      if (!validateWalletAddress(arbitratorAddress)) {
+        toast.error(formatValidationError('Arbitrator address', 'Invalid Stacks address format'));
         return;
       }
     }
 
     // Validate total amount
-    const amountValidation = validateAmount(totalAmount, 0);
-    if (!amountValidation.isValid) {
-      toast.error(formatValidationError('Total amount', amountValidation));
+    if (!validateAmount(totalAmount)) {
+      toast.error(formatValidationError('Total amount', 'Invalid amount'));
       return;
     }
 
@@ -153,9 +150,8 @@ export default function CreateInvoice() {
 
     // Validate all milestones
     for (const milestone of milestones) {
-      const validation = validateMilestone(milestone.description, milestone.amount);
-      if (!validation.isValid) {
-        toast.error(validation.error || 'Invalid milestone data');
+      if (!validateMilestone(milestone.description)) {
+        toast.error('Invalid milestone description');
         return;
       }
     }
