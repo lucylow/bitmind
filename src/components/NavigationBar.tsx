@@ -44,6 +44,12 @@ const NavigationBar = () => {
   
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
   const isLandingPage = location.pathname === '/landing';
+  const isHomePage = location.pathname === '/';
+  
+  // Don't show navbar on home page - it has its own landing header
+  if (isLandingPage || isHomePage) {
+    return null;
+  }
   
   // Navigation sections for better organization
   const mainNavItems: NavItem[] = [
@@ -124,11 +130,6 @@ const NavigationBar = () => {
       description: 'Documentation'
     },
   ];
-  
-  // Don't show navbar on standalone landing page
-  if (isLandingPage) {
-    return null;
-  }
   
   return (
     <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">

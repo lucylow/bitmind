@@ -2,13 +2,13 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Wallet, Shield, Plus, TrendingUp, RefreshCw, Sparkles, Award, Coins, Brain, Zap, Users, Target } from "lucide-react";
+import { FileText, Wallet, Shield, Plus, TrendingUp, RefreshCw, Sparkles, Award, Coins, Brain, Zap, Users, Target, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useWalletStore } from "@/store/useWalletStore";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import QuickNav from "@/components/QuickNav";
-import NavigationBar from "@/components/NavigationBar";
 import DemoModeButton from "@/components/DemoModeButton";
+import WalletConnect from "@/components/WalletConnect";
 
 // Utility function for formatting currency
 const formatCurrency = (amount: number, currency = 'USD') => {
@@ -21,10 +21,89 @@ const formatCurrency = (amount: number, currency = 'USD') => {
 const Index: React.FC = () => {
   const { isConnected } = useWalletStore();
   const { prices, loading: pricesLoading, refetch } = useCryptoPrices();
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   
   return (
     <div className="min-h-screen bg-background">
-      <NavigationBar />
+      {/* Landing Page Header - Simple & Clean */}
+      <header className="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-purple-600 rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-transform">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                  BitMindAI
+                </span>
+                <span className="text-xs text-gray-500 -mt-1 hidden sm:block">Bitcoin-native smart invoices</span>
+              </div>
+            </Link>
+            
+            {/* Desktop Navigation - Key CTAs */}
+            <div className="hidden md:flex items-center gap-3">
+              <Link to="/demo">
+                <Button variant="ghost" size="sm">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Try Demo
+                </Button>
+              </Link>
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
+              <Link to="/create">
+                <Button variant="outline" size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Invoice
+                </Button>
+              </Link>
+              {/* Wallet Connect - Less prominent, on the right */}
+              <div className="ml-2 pl-2 border-l border-gray-200">
+                <WalletConnect />
+              </div>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <div className="md:hidden pb-4 border-t border-gray-100 mt-2 pt-4 space-y-2">
+              <Link to="/demo" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Try Demo
+                </Button>
+              </Link>
+              <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start">
+                  Dashboard
+                </Button>
+              </Link>
+              <Link to="/create" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Invoice
+                </Button>
+              </Link>
+              <div className="pt-2 border-t border-gray-100">
+                <WalletConnect />
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <section className="mb-12 text-center">
