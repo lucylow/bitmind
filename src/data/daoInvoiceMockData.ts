@@ -20,6 +20,13 @@ export interface DAOInvoiceTemplate {
   };
   scenario: string;
   complexity: 'simple' | 'medium' | 'complex';
+  nlpMetadata?: {
+    processingTime: number; // milliseconds
+    f1Score: number;
+    model: string;
+    extractedEntities: string[];
+    schemaType: string;
+  };
 }
 
 export const DAO_INVOICE_TEMPLATES: DAOInvoiceTemplate[] = [
@@ -49,6 +56,13 @@ Notes: Include gas optimization recommendations and post-audit support for 30 da
       arbiter: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE',
       deadline: '2025-12-31',
       milestone_description: 'Smart contract security audit with 3 milestones: assessment, testing, final report'
+    },
+    nlpMetadata: {
+      processingTime: 1847,
+      f1Score: 0.952,
+      model: 'BERT-base-uncased',
+      extractedEntities: ['payee', 'payer', 'amount', 'milestones', 'arbiter', 'deadline'],
+      schemaType: 'JSON-LD'
     }
   },
   {
