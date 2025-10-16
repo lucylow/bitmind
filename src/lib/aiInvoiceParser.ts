@@ -132,13 +132,12 @@ export async function parseInvoiceWithOpenAI(
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4',
+      model: 'gpt-5-mini-2025-08-07',
       messages: [
         { role: 'system', content: AI_SYSTEM_PROMPT },
         { role: 'user', content: generateUserPrompt(invoiceText) },
       ],
-      temperature: 0.1,
-      max_tokens: 500,
+      max_completion_tokens: 500,
     }),
   });
 
