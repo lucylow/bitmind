@@ -474,13 +474,60 @@ export default function SmartInvoiceDemo() {
               </CardContent>
             </Card>
 
+            {/* Recommended Demo Path */}
+            <Alert className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              <AlertDescription className="text-sm">
+                <strong className="text-purple-900">👉 Recommended for Demo:</strong> Click the button below to use our pre-built mock data with BERT NLP pipeline simulation. No API keys required!
+              </AlertDescription>
+            </Alert>
+
+            <Button 
+              onClick={handleUseMockData} 
+              disabled={loading}
+              variant="default"
+              size="lg"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg py-6"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Processing with BERT NLP Pipeline...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  AI Parse Invoice (No API Key Needed)
+                </>
+              )}
+            </Button>
+
+            <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <Info className="w-4 h-4 text-blue-600" />
+              <AlertDescription className="text-xs text-blue-900">
+                <strong>NLP Pipeline:</strong> A contributor submits plain-English invoice text. Our BERT-based model extracts entities with <strong>95.2% F1 score</strong>, outputs structured JSON-LD schema, and automatically populates a Clarity escrow template deployed on Stacks. The DAO deposits sBTC, and the state machine transitions through <code className="bg-white px-1 py-0.5 rounded text-xs">created→funded→verified→released</code> - each step requiring cryptographic proof of condition satisfaction.
+              </AlertDescription>
+            </Alert>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Advanced: Use Your Own AI API
+                </span>
+              </div>
+            </div>
+
             {/* AI Provider Selection */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Select AI Provider</label>
+              <label className="text-sm font-medium mb-2 block">Select AI Provider (Optional)</label>
               <div className="flex gap-2 flex-wrap">
                 <Button
                   variant={aiProvider === 'supabase' ? 'default' : 'outline'}
                   onClick={() => setAiProvider('supabase')}
+                  size="sm"
                   className={aiProvider === 'supabase' ? 'bg-green-600' : ''}
                 >
                   <Database className="w-4 h-4 mr-2" />
@@ -490,12 +537,14 @@ export default function SmartInvoiceDemo() {
                 <Button
                   variant={aiProvider === 'openai' ? 'default' : 'outline'}
                   onClick={() => setAiProvider('openai')}
+                  size="sm"
                 >
-                  OpenAI GPT-4
+                  OpenAI GPT-5
                 </Button>
                 <Button
                   variant={aiProvider === 'claude' ? 'default' : 'outline'}
                   onClick={() => setAiProvider('claude')}
+                  size="sm"
                 >
                   Anthropic Claude
                 </Button>
@@ -520,18 +569,21 @@ export default function SmartInvoiceDemo() {
                 <label className="text-sm font-medium mb-2 block">API Key</label>
                 <Input
                   type="password"
-                  placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key`}
+                  placeholder={`Enter your ${aiProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key (requires credits)`}
                   value={apiKey}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  ⚠️ Note: OpenAI requires active credits. If you get quota errors, use Mock Data instead.
+                </p>
               </div>
             )}
 
             {/* Invoice Text */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Invoice Text</label>
+              <label className="text-sm font-medium mb-2 block">Invoice Text (Optional - for live API testing)</label>
               <Textarea
-                rows={12}
+                rows={8}
                 placeholder="Paste your invoice text here..."
                 value={invoiceText}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInvoiceText(e.target.value)}
@@ -545,7 +597,8 @@ export default function SmartInvoiceDemo() {
                 <Button 
                   onClick={handleParseInvoice} 
                   disabled={loading}
-                  className="w-full bg-green-600 hover:bg-green-700"
+                  variant="outline"
+                  className="w-full"
                 >
                   {loading ? (
                     <>
@@ -555,7 +608,7 @@ export default function SmartInvoiceDemo() {
                   ) : (
                     <>
                       <Database className="w-4 h-4 mr-2" />
-                      Parse Invoice with Supabase (OpenAI)
+                      Parse with Supabase (OpenAI)
                     </>
                   )}
                 </Button>
@@ -565,6 +618,7 @@ export default function SmartInvoiceDemo() {
                 <Button 
                   onClick={handleParseInvoice} 
                   disabled={loading || !apiKey}
+                  variant="outline"
                   className="w-full"
                 >
                   {loading ? (
@@ -575,48 +629,11 @@ export default function SmartInvoiceDemo() {
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 mr-2" />
-                      Parse Invoice with {aiProvider === 'openai' ? 'OpenAI' : 'Claude'}
+                      Parse with {aiProvider === 'openai' ? 'OpenAI' : 'Claude'}
                     </>
                   )}
                 </Button>
               )}
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or try without any API
-                  </span>
-                </div>
-              </div>
-
-              <Button 
-                onClick={handleUseMockData} 
-                disabled={loading}
-                variant="default"
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing with BERT NLP Pipeline...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    AI Parse Invoice (No API Key Needed)
-                  </>
-                )}
-              </Button>
-
-              <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-                <Info className="w-4 h-4 text-blue-600" />
-                <AlertDescription className="text-xs text-blue-900">
-                  <strong>NLP Pipeline:</strong> A contributor submits plain-English invoice text. Our BERT-based model extracts entities with <strong>95.2% F1 score</strong>, outputs structured JSON-LD schema, and automatically populates a Clarity escrow template deployed on Stacks. The DAO deposits sBTC, and the state machine transitions through <code className="bg-white px-1 py-0.5 rounded text-xs">created→funded→verified→released</code> - each step requiring cryptographic proof of condition satisfaction.
-                </AlertDescription>
-              </Alert>
             </div>
           </CardContent>
         </Card>

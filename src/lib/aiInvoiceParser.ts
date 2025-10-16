@@ -142,7 +142,21 @@ export async function parseInvoiceWithOpenAI(
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.statusText}`);
+    const errorText = await response.text();
+    let errorMessage = 'OpenAI API error';
+    
+    try {
+      const errorData = JSON.parse(errorText);
+      if (response.status === 429 && errorData.error?.code === 'insufficient_quota') {
+        errorMessage = '❌ Your OpenAI API key has exceeded its quota. Please add credits to your OpenAI account or click "AI Parse Invoice (No API Key Needed)" to use the demo.';
+      } else {
+        errorMessage = `OpenAI API error: ${errorData.error?.message || errorText}`;
+      }
+    } catch {
+      errorMessage = `OpenAI API error: ${errorText || response.statusText}`;
+    }
+    
+    throw new Error(errorMessage);
   }
 
   const data = await response.json();
